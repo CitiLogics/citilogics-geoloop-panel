@@ -1,7 +1,7 @@
 {
   "type": "panel",
   "name": "GeoLoop",
-  "id": "grafana-geoloop",
+  "id": "citilogics-geoloop-panel",
 
   "info": {
     "description": "Looping animated map for Grafana.",
