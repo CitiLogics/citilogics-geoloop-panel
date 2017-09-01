@@ -36,3 +36,5 @@ Here is where you configure the animated display preferences. Do you want the Li
 ### Animation Speed / Looping Options
 Not yet implemented. Have something to contribute? PRs are welcome!
 
+### Special Notes
+This work borrows heavily from the great work in `grafana-worldmap-panel`. While both plugins display maps, this one was developed specifically to play an animation of how geographic properties change over time.
