@@ -1,0 +1,109 @@
+<div class="editor-row">
+    <div class="section gf-form-group">
+        <h5 class="section-heading">Map Options</h5>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">MapBox API Key</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.mbApiKey" placeholder="pk.xxxxxxxxx" ng-change="ctrl.setMapProviderOpts()" ng-model-onblur />
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Map Style</label>
+            <div class="gf-form-select-wrapper max-width-10">
+                <select class="input-small gf-form-input" ng-model="ctrl.panel.mapStyle" ng-options="s for (s,u) in ctrl.opts.mapStyles" ng-change="ctrl.setMapProviderOpts()"></select>
+            </div>
+        </div>
+        <gf-form-switch class="gf-form" label="Allow Pan/Zoom" label-class="width-10" checked="ctrl.panel.userInteractionEnabled" on-change="ctrl.setMapProviderOpts()">
+        </gf-form-switch>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Center</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.lonLatStr" ng-change="ctrl.setNewMapCenter()" ng-model-onblur />
+            <label class="gf-form-label" ng-click="ctrl.setLocationFromMap()">Use Current</label>
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Initial Zoom</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.initialZoom" ng-change="ctrl.setZoom()" placeholder="1" ng-model-onblur />
+        </div>
+        <div class="gf-form">
+            <gf-form-switch class="gf-form" label="Show Legend" label-class="width-10" checked="ctrl.panel.showLegend" on-change="ctrl.toggleLegend()"></gf-form-switch>
+        </div>
+    </div>
+    <div class="section gf-form-group">
+        <h5 class="section-heading">Map Data Options</h5>
+        <div class="gf-form">
+            <label class="gf-form-label width-12">GeoJSON URL</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.geo.contents" ng-change="ctrl.loadGeo(true)" ng-model-onblur />
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-12">Jsonp Callback</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.geo.callback" ng-change="ctrl.loadGeo(true)" ng-model-onblur />
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-12">Series GeoID Tag</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.geoIdTag" ng-change="ctrl.render()" ng-model-onblur />
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-12">Feature Type</label>
+            <div class="gf-form-select-wrapper max-width-10">
+                <select class="input-small gf-form-input" ng-model="ctrl.panel.renderType" ng-options="s for (s,u) in ctrl.opts.featureTypes" ng-change="ctrl.render()"></select>
+            </div>
+        </div>
+    </div>
+
+    <div class="section gf-form-group" ng-show="ctrl.panel.renderType != 'polygon'">
+        <h5 class="section-heading">Visualization: Size Options</h5>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Size</label>
+            <select class="input-small gf-form-input" ng-model="ctrl.panel.sizeRamp.codeTo" ng-options="s for s in ['fixed','measurement']" ng-change="ctrl.render()"></select>
+        </div>
+        <div class="gf-form" ng-show="ctrl.panel.sizeRamp.codeTo == 'fixed'">
+            <label class="gf-form-label width-10">Fixed Size</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.sizeRamp.fixedValue" ng-change="ctrl.render()" placeholder="2" ng-model-onblur />
+        </div>
+        <div class="gf-form" ng-show="ctrl.panel.sizeRamp.codeTo == 'measurement__ignore'">
+            <label class="gf-form-label width-10">Size Tag</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.sizeRamp.measurement" ng-change="ctrl.render()" placeholder="measurement_name" ng-model-onblur />
+        </div>
+        <gf-form-switch class="gf-form" ng-show="ctrl.panel.sizeRamp.codeTo == 'measurement'" label="Auto Size Range" label-class="width-10" checked="ctrl.panel.sizeRamp.auto" on-change="ctrl.render()">
+        </gf-form-switch>
+        <div class="gf-form" ng-show="!ctrl.panel.sizeRamp.auto && ctrl.panel.sizeRamp.codeTo == 'measurement'">
+            <label class="gf-form-label width-10">Size Input Range</label>
+            <input type="text" class="input-small gf-form-input width-5" ng-model="ctrl.panel.sizeRamp.minValue" ng-change="ctrl.render()" placeholder="0" ng-model-onblur />
+            <input type="text" class="input-small gf-form-input width-5" ng-model="ctrl.panel.sizeRamp.maxValue" ng-change="ctrl.render()" placeholder="100" ng-model-onblur />
+        </div>
+        <div class="gf-form" ng-show="ctrl.panel.sizeRamp.codeTo == 'measurement'">
+            <label class="gf-form-label width-10">Size Output Range</label>
+            <input type="text" class="input-small gf-form-input width-5" ng-model="ctrl.panel.sizeRamp.min" ng-change="ctrl.render()" placeholder="1" ng-model-onblur />
+            <input type="text" class="input-small gf-form-input width-5" ng-model="ctrl.panel.sizeRamp.max" ng-change="ctrl.render()" placeholder="10" ng-model-onblur />
+        </div>
+    </div>
+
+    <div class="section gf-form-group">
+        <h5 class="section-heading">Visualization: Color Options</h5>
+
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Color</label>
+            <select class="input-small gf-form-input width-10" ng-model="ctrl.panel.colorRamp.codeTo" ng-options="s for s in ['fixed','measurement']" ng-change="ctrl.render()"></select>
+        </div>
+        <div class="gf-form" ng-show="ctrl.panel.colorRamp.codeTo == 'fixed'">
+            <label class="gf-form-label width-10">Fixed Color</label>
+            <spectrum-picker class="gf-form-input width-3" ng-model="ctrl.panel.colorRamp.fixedValue" ng-change="ctrl.render()" ></spectrum-picker>
+        </div>
+        <div class="gf-form" ng-show="ctrl.panel.colorRamp.codeTo == 'measurement__ignore'">
+            <label class="gf-form-label width-10">Color Tag</label>
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.colorRamp.measurement" ng-change="ctrl.render()" placeholder="measurement_name" ng-model-onblur />
+        </div>
+        <gf-form-switch class="gf-form" ng-show="ctrl.panel.colorRamp.codeTo == 'measurement'" label="Auto Color Range" label-class="width-10" checked="ctrl.panel.colorRamp.auto" on-change="ctrl.render()">
+        </gf-form-switch>
+        <div class="gf-form" ng-show="!ctrl.panel.colorRamp.auto && ctrl.panel.colorRamp.codeTo == 'measurement'">
+            <label class="gf-form-label width-10">Color Input Range</label>
+            <input type="text" class="input-small gf-form-input width-5" ng-model="ctrl.panel.colorRamp.minValue" ng-change="ctrl.render()" placeholder="0" ng-model-onblur />
+            <input type="text" class="input-small gf-form-input width-5" ng-model="ctrl.panel.colorRamp.maxValue" ng-change="ctrl.render()" placeholder="100" ng-model-onblur />
+        </div>
+        <div class="gf-form" ng-show="ctrl.panel.colorRamp.codeTo == 'measurement'">
+            <label class="gf-form-label width-10">Color Output Scale</label>
+            <select class="input-small gf-form-input" ng-model="ctrl.panel.colorRamp.scaleName" ng-options="s for s in ctrl.getColorNames()" ng-change="ctrl.render()"></select>
+        </div>
+        <div class="gf-form" ng-show="ctrl.panel.colorRamp.codeTo == 'measurement'">
+            <label class="gf-form-label width-20"><img ng-src="{{ctrl.getColorScaleImgUrl()}}" class="geoloop-img-fill" /></label>
+        </div>
+    </div>
+</div>

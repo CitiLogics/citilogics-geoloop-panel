@@ -1,0 +1,35 @@
+{
+  "type": "panel",
+  "name": "GeoLoop",
+  "id": "grafana-geoloop",
+
+  "info": {
+    "description": "Looping animated map for Grafana.",
+    "author": {
+      "name": "Sam Hatchett <sam@citilogics.com>",
+      "url": "https://citilogics.com"
+    },
+    "keywords": ["map", "panel", "GIS"],
+    "logos": {
+      "small": "src/images/geoloop-icon.png",
+      "large": "src/images/geoloop-icon.png"
+    },
+    "links": [
+      {"name": "Project site", "url": "https://github.com/citilogics/grafana-geoloop"},
+      {"name": "MIT License", "url": "https://github.com/citilogics/grafana-geoloop/blob/master/license.txt"}
+    ],
+    "screenshots": [
+      {"name": "World", "path": "src/images/overview.png"},
+      {"name": "Query", "path": "src/images/timeseries-query.png"},
+      {"name": "Options", "path": "src/images/geoloop-options.png"}
+    ],
+    "version": "1.0.0",
+    "updated": "2017-09-01"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "3.x.x",
+    "plugins": [ ]
+  }
+}
+
