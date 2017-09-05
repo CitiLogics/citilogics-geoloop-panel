@@ -140,7 +140,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   getColorScaleImgUrl() {
-    return '/public/plugins/grafana-geoloop/images/colorRamps/' + this.panel.colorRamp.scaleName + '.png';
+    return '/public/plugins/citilogics-geoloop-panel/images/colorRamps/' + this.panel.colorRamp.scaleName + '.png';
   }
   getColorNames() {
     return Object.keys(this.opts.colorRamps);
@@ -223,7 +223,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 
   onInitEditMode() {
     console.log('init edit mode');
-    this.addEditorTab('GeoLoop', 'public/plugins/grafana-geoloop/partials/editor.html');
+    this.addEditorTab('GeoLoop', 'public/plugins/citilogics-geoloop-panel/partials/editor.html');
   }
 
   onDataReceived(dataList) {

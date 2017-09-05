@@ -13,8 +13,8 @@ System.register(['app/plugins/sdk', './geoloop_ctrl'], function (_export, _conte
     execute: function () {
       /* eslint import/no-extraneous-dependencies: 0 */
       loadPluginCss({
-        dark: 'plugins/grafana-geoloop/css/geoloop.dark.css',
-        light: 'plugins/grafana-geoloop/css/geoloop.light.css'
+        dark: 'plugins/citilogics-geoloop-panel/css/geoloop.dark.css',
+        light: 'plugins/citilogics-geoloop-panel/css/geoloop.light.css'
       });
 
       /* eslint import/prefer-default-export: 0 */
