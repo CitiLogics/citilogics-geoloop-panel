@@ -15,8 +15,8 @@
       "large": "src/images/geoloop-icon.png"
     },
     "links": [
-      {"name": "Project site", "url": "https://github.com/citilogics/grafana-geoloop"},
-      {"name": "MIT License", "url": "https://github.com/citilogics/grafana-geoloop/blob/master/license.txt"}
+      {"name": "Project site", "url": "https://github.com/citilogics/citilogics-geoloop-panel"},
+      {"name": "MIT License", "url": "https://github.com/citilogics/citilogics-geoloop-panel/blob/master/license.txt"}
     ],
     "screenshots": [
       {"name": "World", "path": "src/images/overview.png"},

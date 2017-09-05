@@ -209,7 +209,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         _createClass(GeoLoopCtrl, [{
           key: 'getColorScaleImgUrl',
           value: function getColorScaleImgUrl() {
-            return '/public/plugins/grafana-geoloop/images/colorRamps/' + this.panel.colorRamp.scaleName + '.png';
+            return '/public/plugins/citilogics-geoloop-panel/images/colorRamps/' + this.panel.colorRamp.scaleName + '.png';
           }
         }, {
           key: 'getColorNames',
@@ -303,7 +303,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           key: 'onInitEditMode',
           value: function onInitEditMode() {
             console.log('init edit mode');
-            this.addEditorTab('GeoLoop', 'public/plugins/grafana-geoloop/partials/editor.html');
+            this.addEditorTab('GeoLoop', 'public/plugins/citilogics-geoloop-panel/partials/editor.html');
           }
         }, {
           key: 'onDataReceived',
