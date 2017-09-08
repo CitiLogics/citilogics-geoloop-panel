@@ -8,8 +8,7 @@ The GeoLoop Panel is a simple visualizer for joining GeoJSON to Time Series data
 If you know how to use GeoJSON and InfluxDB, then you're most of the way there.
 
 - Wrap up your GeoJSON in a callback: `geo({ "type": "FeatureCollection", ... });` and put it on a server somewhere.
-- Make sure that your geo features have the `id` feature property.
-- Make sure that each feature's `id` corresponds to some tag in your InfluxDB.
+- Make sure that each GeoJSON feature has some property value that corresponds to some tag in your InfluxDB.
 - Get a free [MapBox API Key](https://www.mapbox.com/developers/).
 
 ## Simple Example
@@ -29,6 +28,8 @@ This is where you enter your MapBox API key, set the default center/zoom for the
 
 ### Map Data Options
 Your GeoJSON must be downloadable as JSONP - that is, within a callback. Enter the URL and callback name here. Also enter the Time Series tag that will be used to coordinate between the Series and the GeoJSON Features. Specify which type of feature you want to visualize (Line, Point, or Polygon). The map will filter those features and only show the type you specify.
+
+Use the "GeoJSON ID Path" to designate the dot-separated key path of your GeoJSON Features that correspond to the tag you're referencing from the Time Series location tag. For example, if your features have a path `properties.FEATURE_ID` that references the same value you expect from the Time Series location tag, then enter that here.
 
 ### Visualization Options
 Here is where you configure the animated display preferences. Do you want the Lines/Points to vary in size? What about color? These Options are here.

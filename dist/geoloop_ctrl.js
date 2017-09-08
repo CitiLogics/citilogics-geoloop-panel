@@ -82,6 +82,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         animationSpeed: 1, // # of seconds animation time per day of data
         animationPause: 500, // millisecond pause at end of animation loop
         geoIdTag: 'geo_id',
+        geoIdPath: 'id',
         geo: {
           location: 'url', // one of: url, text
           contents: 'xxxxxx', // either the jsonp url or the json text itself
@@ -391,9 +392,13 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               if (!feature.properties) {
                 feature.properties = {};
               }
-              var fName = feature.id;
-              if (fName in keyedSeries) {
-                var series = keyedSeries[fName];
+              // this funny business below deserializes the dot-notation path name and resolves the feature id
+              // the user has specified.
+              var featureId = _this4.panel.geoIdPath.split('.').reduce(function (obj, key) {
+                return obj[key];
+              }, feature);
+              if (featureId in keyedSeries) {
+                var series = keyedSeries[featureId];
                 series.datapoints.forEach(function (point) {
                   var time = point[1];
                   var val = point[0];

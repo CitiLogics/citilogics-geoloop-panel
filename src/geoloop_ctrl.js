@@ -20,6 +20,7 @@ const panelDefaults = {
   animationSpeed: 1, // # of seconds animation time per day of data
   animationPause: 500, // millisecond pause at end of animation loop
   geoIdTag: 'geo_id',
+  geoIdPath: 'id',
   geo: {
     location: 'url', // one of: url, text
     contents: 'xxxxxx', // either the jsonp url or the json text itself
@@ -304,9 +305,11 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       if (!feature.properties) {
         feature.properties = {};
       }
-      const fName = feature.id;
-      if (fName in keyedSeries) {
-        const series = keyedSeries[fName];
+      // this funny business below deserializes the dot-notation path name and resolves the feature id
+      // the user has specified.
+      const featureId = this.panel.geoIdPath.split('.').reduce((obj, key) => obj[key], feature);
+      if (featureId in keyedSeries) {
+        const series = keyedSeries[featureId];
         series.datapoints.forEach((point) => {
           const time = point[1];
           const val = point[0];
