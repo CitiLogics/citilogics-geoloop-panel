@@ -1,11 +1,11 @@
-![Overview](https://raw.githubusercontent.com/CitiLogics/citilogics-geoloop-panel/master/src/images/overview.png)
+![Overview](https://raw.githubusercontent.com/CitiLogics/citilogics-geoloop-panel/master/src/images/rain.gif)
 
 
 ## GeoLoop Panel Plugin for Grafana
 
-The GeoLoop Panel is a simple visualizer for joining GeoJSON to Time Series data, and animating the geo features in a loop. You can link Polygon, Point, or Line attributes to dynamic data fetched through Grafana. An example use might be to visualize the hourly varying temperature at land-based weather stations across the country, or to view the evolution of water quality along a stream or tributary.
+The GeoLoop Panel is a simple visualizer for joining GeoJSON to Time Series data, and animating the geo features in a loop. You can link Polygon, Point, or Line attributes to dynamic data fetched through Grafana. An example use might be to visualize the hourly varying temperature at land-based weather stations across the country, or to view the evolution of water quality along a stream or tributary. The image above is showing the rate of rainfall during a 5-hour storm passing over Cincinnati, Ohio, in March of 2017.
 
-If you know how to use GeoJSON and InfluxDB, then you're most of the way there.
+Ready to get going? If you know how to use GeoJSON and InfluxDB, then you're most of the way there.
 
 - Wrap up your GeoJSON in a callback: `geo({ "type": "FeatureCollection", ... });` and put it on a server somewhere.
 - Make sure that each GeoJSON feature has some property value that corresponds to some tag in your InfluxDB.
