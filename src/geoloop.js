@@ -50,7 +50,7 @@ export default class GeoLoop {
     });
     this.frames = [];
   }
-  
+
   createFrames() {
     if (!this.ctrl.dataCharacteristics.timeValues) {
       console.log('no frames');
