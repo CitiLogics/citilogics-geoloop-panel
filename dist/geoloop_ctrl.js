@@ -238,6 +238,21 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             this.render();
           }
         }, {
+          key: 'hardResetMap',
+          value: function hardResetMap() {
+            if (this.map) {
+              this.map.remove();
+            }
+            this.map = null;
+            this.hardRefresh();
+          }
+        }, {
+          key: 'hardRefresh',
+          value: function hardRefresh() {
+            this.updateRamp();
+            this.loadGeo(true);
+          }
+        }, {
           key: 'setMapProviderOpts',
           value: function setMapProviderOpts() {
             var _this2 = this;
@@ -282,8 +297,9 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                 jsonpCallback: this.panel.geo.callback,
                 dataType: 'jsonp',
                 success: function success(res) {
-                  // console.log('got geojson: ', res);
+                  console.log('downloaded geojson');
                   _this3.geo = res;
+                  _this3.updateGeoDataFeatures();
                   _this3.render();
                 }
               }).fail(function (res) {
@@ -319,8 +335,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             this.series = dataList.map(this.seriesHandler.bind(this));
             // console.log('series: ', this.series);
             this.dataCharacteristics = this.dataFormatter.getCharacteristics();
-            this.changeRampOptions(this.dataCharacteristics);
-
+            this.updateRamp();
             this.updateGeoDataFeatures();
             this.render();
           }
@@ -356,8 +371,12 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             var _this4 = this;
 
             if (!this.geo || !this.geo.features) {
-              // console.log('no geo or no features');
+              console.log('no geo or no features');
               return;
+            }
+            if (this.map && this.map.map.getSource('geo')) {
+              // console.log('geojson source found. removing...');
+              this.map.map.removeSource('geo');
             }
 
             // clear timeseries data from geojson data
@@ -407,12 +426,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               }
             });
 
-            if (this.map && this.map.map.getSource('geo')) {
-              // console.log('geojson source found. removing...');
-              this.map.map.removeSource('geo');
-            }
             if (this.geo && this.map) {
-              // console.log('adding geojson source...');
+              console.log('adding geojson source...');
               this.map.map.addSource('geo', {
                 type: 'geojson',
                 data: this.geo
@@ -420,11 +435,12 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             }
           }
         }, {
-          key: 'changeRampOptions',
-          value: function changeRampOptions(dc) {
+          key: 'updateRamp',
+          value: function updateRamp() {
             var _this5 = this;
 
             // dc :: data characteristics (dc{timeValues, min, max})
+            var dc = this.dataCharacteristics;
             if (this.panel.colorRamp.codeTo === 'fixed') {
               this.panel.colorInterpolator = function () {
                 return _this5.panel.colorRamp.fixedValue;
@@ -448,8 +464,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                 return py[0] + (val - px[0]) * (py[1] - py[0]) / (px[1] - px[0]);
               };
             }
-
-            this.render();
           }
         }, {
           key: 'link',

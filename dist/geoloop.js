@@ -109,10 +109,27 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               return;
             }
 
-            if (this.map.getSource('geo') === undefined) {
-              console.log('no geo source in map');
-              return;
+            if (this.map.isSourceLoaded('geo')) {
+              this.createFramesSafely();
+            } else {
+              console.log('no geo source in map. maybe not loaded?');
+              // this is stupid to use setTimeout.
+              // but mapbox doesn't seem to have a on-source-loaded event that reliably works
+              // for this purpose.
+              setTimeout(function () {
+                console.log('waited for layer to load.');
+                if (_this2.map.isSourceLoaded('geo')) {
+                  _this2.createFramesSafely();
+                } else {
+                  console.log('still no geo source. try refresh manually?');
+                }
+              }, 1000);
             }
+          }
+        }, {
+          key: 'createFramesSafely',
+          value: function createFramesSafely() {
+            var _this3 = this;
 
             var sizeIsDynamic = this.ctrl.panel.sizeRamp.codeTo === 'measurement';
             var colorIsDynamic = this.ctrl.panel.colorRamp.codeTo === 'measurement';
@@ -172,12 +189,12 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                   property: frameName,
                   type: 'exponential',
                   stops: sizeStops
-                } : parseFloat(_this2.ctrl.panel.sizeRamp.fixedValue);
+                } : parseFloat(_this3.ctrl.panel.sizeRamp.fixedValue);
                 pp['line-color'] = colorIsDynamic ? {
                   property: frameName,
                   type: 'exponential',
                   stops: colorStops
-                } : parseFloat(_this2.ctrl.panel.colorRamp.fixedValue);
+                } : parseFloat(_this3.ctrl.panel.colorRamp.fixedValue);
               } else if (featureType === 'point') {
                 geoFilter = ['==', '$type', 'Point'];
                 pp['circle-opacity'] = 0;
@@ -186,12 +203,12 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                   property: frameName,
                   type: 'exponential',
                   stops: sizeStops
-                } : parseFloat(_this2.ctrl.panel.sizeRamp.fixedValue);
+                } : parseFloat(_this3.ctrl.panel.sizeRamp.fixedValue);
                 pp['circle-color'] = colorIsDynamic ? {
                   property: frameName,
                   type: 'exponential',
                   stops: colorStops
-                } : _this2.ctrl.panel.colorRamp.fixedValue;
+                } : _this3.ctrl.panel.colorRamp.fixedValue;
               } else if (featureType === 'polygon') {
                 geoFilter = ['==', '$type', 'Polygon'];
                 pp['fill-opacity'] = 0;
@@ -200,10 +217,10 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                   property: frameName,
                   type: 'exponential',
                   stops: colorStops
-                } : parseFloat(_this2.ctrl.panel.colorRamp.fixedValue);
+                } : _this3.ctrl.panel.colorRamp.fixedValue;
               }
 
-              _this2.map.addLayer({
+              _this3.map.addLayer({
                 id: 'f-' + time,
                 type: layerType,
                 source: 'geo',
@@ -211,7 +228,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                 filter: geoFilter
               });
 
-              _this2.frames.push(time);
+              _this3.frames.push(time);
             });
 
             // get slider component, set min/max/value
@@ -220,14 +237,14 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'startAnimation',
           value: function startAnimation() {
-            var _this3 = this;
+            var _this4 = this;
 
             if (this.animation) {
               this.stopAnimation();
             }
 
             this.animation = setInterval(function () {
-              _this3.stepFrame();
+              _this4.stepFrame();
             }, 200);
           }
         }, {
@@ -239,6 +256,9 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'stepFrame',
           value: function stepFrame() {
+            if (!this.map) {
+              return;
+            }
             if (this.frames.length === 0) {
               // console.log('skipping animation: no frames');
               return;
@@ -287,7 +307,10 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'remove',
           value: function remove() {
-            this.map.remove();
+            if (this.map) {
+              this.map.remove();
+            }
+            this.map = null;
           }
         }]);
 

@@ -30,6 +30,7 @@ System.register(['./geoloop'], function (_export, _context) {
 
       if (!ctrl.map.legend && ctrl.panel.showLegend) ctrl.map.createLegend();
 
+      ctrl.updateRamp();
       ctrl.map.drawLayerFrames();
     }
   }

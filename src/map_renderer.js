@@ -26,6 +26,7 @@ export default function link(scope, elem, attrs, ctrl) {
 
     if (!ctrl.map.legend && ctrl.panel.showLegend) ctrl.map.createLegend();
 
+    ctrl.updateRamp();
     ctrl.map.drawLayerFrames();
   }
 }

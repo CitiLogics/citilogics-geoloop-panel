@@ -3,7 +3,7 @@
         <h5 class="section-heading">Map Options</h5>
         <div class="gf-form">
             <label class="gf-form-label width-10">MapBox API Key</label>
-            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.mbApiKey" placeholder="pk.xxxxxxxxx" ng-change="ctrl.setMapProviderOpts()" ng-model-onblur />
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.mbApiKey" placeholder="pk.xxxxxxxxx" ng-change="ctrl.hardResetMap()" ng-model-onblur />
         </div>
         <div class="gf-form">
             <label class="gf-form-label width-10">Map Style</label>
@@ -38,11 +38,11 @@
         </div>
         <div class="gf-form">
             <label class="gf-form-label width-12">GeoJSON ID Path</label>
-            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.geoIdPath" ng-change="ctrl.render()" ng-model-onblur />
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.geoIdPath" ng-change="ctrl.hardRefresh()" ng-model-onblur />
         </div>
         <div class="gf-form">
             <label class="gf-form-label width-12">Series GeoID Tag</label>
-            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.geoIdTag" ng-change="ctrl.render()" ng-model-onblur />
+            <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.geoIdTag" ng-change="ctrl.hardRefresh()" ng-model-onblur />
         </div>
         <div class="gf-form">
             <label class="gf-form-label width-12">Feature Type</label>

@@ -165,6 +165,19 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     this.render();
   }
 
+  hardResetMap() {
+    if (this.map) {
+      this.map.remove();
+    }
+    this.map = null;
+    this.hardRefresh();
+  }
+
+  hardRefresh() {
+    this.updateRamp();
+    this.loadGeo(true);
+  }
+
   setMapProviderOpts() {
     if (contextSrv.user.lightTheme) {
       this.saturationClass = '';
@@ -180,7 +193,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
         this.render();
       });
     }
-
   }
 
   loadGeo(reload) {
@@ -204,8 +216,9 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
         jsonpCallback: this.panel.geo.callback,
         dataType: 'jsonp',
         success: (res) => {
-          // console.log('got geojson: ', res);
+          console.log('downloaded geojson');
           this.geo = res;
+          this.updateGeoDataFeatures();
           this.render();
         }
       }).fail((res) => {
@@ -238,8 +251,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     this.series = dataList.map(this.seriesHandler.bind(this));
     // console.log('series: ', this.series);
     this.dataCharacteristics = this.dataFormatter.getCharacteristics();
-    this.changeRampOptions(this.dataCharacteristics);
-
+    this.updateRamp();
     this.updateGeoDataFeatures();
     this.render();
   }
@@ -268,8 +280,12 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 
   updateGeoDataFeatures() {
     if (!this.geo || !this.geo.features) {
-      // console.log('no geo or no features');
+      console.log('no geo or no features');
       return;
+    }
+    if (this.map && this.map.map.getSource('geo')) {
+      // console.log('geojson source found. removing...');
+      this.map.map.removeSource('geo');
     }
 
     // clear timeseries data from geojson data
@@ -318,12 +334,8 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       }
     });
 
-    if (this.map && this.map.map.getSource('geo')) {
-      // console.log('geojson source found. removing...');
-      this.map.map.removeSource('geo');
-    }
     if (this.geo && this.map) {
-      // console.log('adding geojson source...');
+      console.log('adding geojson source...');
       this.map.map.addSource('geo', {
         type: 'geojson',
         data: this.geo
@@ -332,7 +344,8 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
 
-  changeRampOptions(dc) { // dc :: data characteristics (dc{timeValues, min, max})
+  updateRamp() { // dc :: data characteristics (dc{timeValues, min, max})
+    const dc = this.dataCharacteristics;
     if (this.panel.colorRamp.codeTo === 'fixed') {
       this.panel.colorInterpolator = () => { return this.panel.colorRamp.fixedValue; };
     } else {
@@ -350,8 +363,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       const py = [this.panel.sizeRamp.min, this.panel.sizeRamp.max];
       this.panel.sizeInterpolator = (val) => { return py[0] + (((val - px[0]) * (py[1] - py[0])) / (px[1] - px[0])); };
     }
-
-    this.render();
   }
 
 

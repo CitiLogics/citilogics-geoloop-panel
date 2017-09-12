@@ -50,7 +50,7 @@ export default class GeoLoop {
     });
     this.frames = [];
   }
-
+  
   createFrames() {
     if (!this.ctrl.dataCharacteristics.timeValues) {
       console.log('no frames');
@@ -62,11 +62,25 @@ export default class GeoLoop {
       return;
     }
 
-    if (this.map.getSource('geo') === undefined) {
-      console.log('no geo source in map');
-      return;
+    if (this.map.isSourceLoaded('geo')) {
+      this.createFramesSafely();
+    } else {
+      console.log('no geo source in map. maybe not loaded?');
+      // this is stupid to use setTimeout.
+      // but mapbox doesn't seem to have a on-source-loaded event that reliably works
+      // for this purpose.
+      setTimeout(() => {
+        console.log('waited for layer to load.');
+        if (this.map.isSourceLoaded('geo')) {
+          this.createFramesSafely();
+        } else {
+          console.log('still no geo source. try refresh manually?');
+        }
+      }, 1000);
     }
+  }
 
+  createFramesSafely() {
     const sizeIsDynamic = (this.ctrl.panel.sizeRamp.codeTo === 'measurement');
     const colorIsDynamic = (this.ctrl.panel.colorRamp.codeTo === 'measurement');
     const featureType = this.ctrl.panel.renderType;
@@ -153,7 +167,7 @@ export default class GeoLoop {
           property: frameName,
           type: 'exponential',
           stops: colorStops
-        } : parseFloat(this.ctrl.panel.colorRamp.fixedValue);
+        } : this.ctrl.panel.colorRamp.fixedValue;
       }
 
       this.map.addLayer({
@@ -190,6 +204,9 @@ export default class GeoLoop {
   }
 
   stepFrame() {
+    if (!this.map) {
+      return;
+    }
     if (this.frames.length === 0) {
       // console.log('skipping animation: no frames');
       return;
@@ -234,6 +251,9 @@ export default class GeoLoop {
   }
 
   remove() {
-    this.map.remove();
+    if (this.map) {
+      this.map.remove();
+    }
+    this.map = null;
   }
 }
