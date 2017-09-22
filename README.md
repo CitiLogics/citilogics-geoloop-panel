@@ -83,11 +83,12 @@ Use the "GeoJSON ID Path" to designate the dot-separated key path of your GeoJSO
 }
 ```
 
-... we will want to carefully notice that the path to the identifier we are interested in is `properties.CLIMDIV` - that is, for each Geo feature, there is a `properties` object, and that object has a nested `CLIMDIV` that will match an identifier in our timeseries database. So let's further assume that we expect data coming from our timeseries database to have the tag `clim_div` relating to the climate division number for the series, like so:
+... we will want to carefully notice that the path to the identifier we are interested in (_relative to each feature_) is `properties.CLIMDIV` - that is, for each Geo feature, there is a `properties` object, and that object has a nested `CLIMDIV` that will match an identifier in our timeseries database. On that note, let's further assume that we expect data coming from our timeseries database to have the tag `clim_div` relating to the climate division number for the series, like so:
 
 ```
 temperature,units=degrees_f,clim_div=2905
 temperature,units=degrees_f,clim_div=2906
+...
 ```
 
 ... then our setup would look like the following:
