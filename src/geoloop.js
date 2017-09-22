@@ -15,13 +15,15 @@ export default class GeoLoop {
   }
 
   createMap() {
+    console.log('rebuilding map');
     const mapCenterLonLat = [parseFloat(this.ctrl.panel.mapCenterLongitude), parseFloat(this.ctrl.panel.mapCenterLatitude)];
     mapboxgl.accessToken = this.ctrl.panel.mbApiKey;
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
       style: 'mapbox://styles/mapbox/' + this.ctrl.panel.mapStyle,
       center: mapCenterLonLat,
-      zoom: parseFloat(this.ctrl.panel.initialZoom)
+      zoom: parseFloat(this.ctrl.panel.initialZoom),
+      interactive: this.ctrl.panel.userInteractionEnabled
     });
   }
 

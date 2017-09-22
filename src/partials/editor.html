@@ -11,7 +11,7 @@
                 <select class="input-small gf-form-input" ng-model="ctrl.panel.mapStyle" ng-options="s for (s,u) in ctrl.opts.mapStyles" ng-change="ctrl.setMapProviderOpts()"></select>
             </div>
         </div>
-        <gf-form-switch class="gf-form" label="Allow Pan/Zoom" label-class="width-10" checked="ctrl.panel.userInteractionEnabled" on-change="ctrl.setMapProviderOpts()">
+        <gf-form-switch class="gf-form" label="Allow Pan/Zoom" label-class="width-10" checked="ctrl.panel.userInteractionEnabled" on-change="ctrl.hardResetMap()">
         </gf-form-switch>
         <div class="gf-form">
             <label class="gf-form-label width-10">Center</label>
@@ -22,7 +22,7 @@
             <label class="gf-form-label width-10">Initial Zoom</label>
             <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.initialZoom" ng-change="ctrl.setZoom()" placeholder="1" ng-model-onblur />
         </div>
-        <div class="gf-form">
+        <div class="gf-form" ng-show="false">
             <gf-form-switch class="gf-form" label="Show Legend" label-class="width-10" checked="ctrl.panel.showLegend" on-change="ctrl.toggleLegend()"></gf-form-switch>
         </div>
     </div>

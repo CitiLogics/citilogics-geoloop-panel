@@ -170,6 +170,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       this.map.remove();
     }
     this.map = null;
+    this.render();
     this.hardRefresh();
   }
 
@@ -340,6 +341,9 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
         type: 'geojson',
         data: this.geo
       });
+    }
+    else {
+      console.log('not adding source because no map');
     }
   }
 
