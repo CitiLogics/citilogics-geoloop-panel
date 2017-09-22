@@ -9,22 +9,22 @@
       "name": "Sam Hatchett <sam@citilogics.com>",
       "url": "https://citilogics.com"
     },
-    "keywords": ["map", "panel", "GIS"],
+    "keywords": ["map", "panel", "GIS", "animation"],
     "logos": {
-      "small": "src/images/geoloop-icon.png",
-      "large": "src/images/geoloop-icon.png"
+      "small": "images/geoloop-icon.png",
+      "large": "images/geoloop-icon.png"
     },
     "links": [
       {"name": "Project site", "url": "https://github.com/citilogics/citilogics-geoloop-panel"},
       {"name": "MIT License", "url": "https://github.com/citilogics/citilogics-geoloop-panel/blob/master/license.txt"}
     ],
     "screenshots": [
-      {"name": "World", "path": "src/images/overview.png"},
-      {"name": "Query", "path": "src/images/timeseries-query.png"},
-      {"name": "Options", "path": "src/images/geoloop-options.png"}
+      {"name": "World", "path": "images/overview.png"},
+      {"name": "Query", "path": "images/timeseries-query.png"},
+      {"name": "Options", "path": "images/geoloop-options.png"}
     ],
-    "version": "1.0.0",
-    "updated": "2017-09-01"
+    "version": "1.1.1",
+    "updated": "2017-09-22"
   },
 
   "dependencies": {
@@ -32,4 +32,3 @@
     "plugins": [ ]
   }
 }
-

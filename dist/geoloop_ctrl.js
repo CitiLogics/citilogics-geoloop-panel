@@ -244,6 +244,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               this.map.remove();
             }
             this.map = null;
+            this.render();
             this.hardRefresh();
           }
         }, {
@@ -398,7 +399,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               // expect series.alias to be of the form --> "measure.aggregator {tagKey: tagVal, tagKey: tagVal}"
               var matches = series.alias.match(reg);
               // console.log('matches: ', matches);
-              if (matches.length > 1) {
+              if (matches && matches.length > 1) {
                 keyedSeries[matches[1]] = series;
               }
             });
@@ -432,6 +433,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                 type: 'geojson',
                 data: this.geo
               });
+            } else {
+              console.log('not adding source because no map');
             }
           }
         }, {

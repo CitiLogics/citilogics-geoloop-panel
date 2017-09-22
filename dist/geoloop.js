@@ -53,13 +53,15 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         _createClass(GeoLoop, [{
           key: 'createMap',
           value: function createMap() {
+            console.log('rebuilding map');
             var mapCenterLonLat = [parseFloat(this.ctrl.panel.mapCenterLongitude), parseFloat(this.ctrl.panel.mapCenterLatitude)];
             mapboxgl.accessToken = this.ctrl.panel.mbApiKey;
             this.map = new mapboxgl.Map({
               container: this.mapContainer,
               style: 'mapbox://styles/mapbox/' + this.ctrl.panel.mapStyle,
               center: mapCenterLonLat,
-              zoom: parseFloat(this.ctrl.panel.initialZoom)
+              zoom: parseFloat(this.ctrl.panel.initialZoom),
+              interactive: this.ctrl.panel.userInteractionEnabled
             });
           }
         }, {
@@ -100,7 +102,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             var _this2 = this;
 
             if (!this.ctrl.dataCharacteristics.timeValues) {
-              console.log('no frames');
+              console.log('no series to display');
               return;
             }
 
@@ -112,12 +114,12 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             if (this.map.isSourceLoaded('geo')) {
               this.createFramesSafely();
             } else {
-              console.log('no geo source in map. maybe not loaded?');
+              // console.log('no geo source in map. maybe not loaded?');
               // this is stupid to use setTimeout.
               // but mapbox doesn't seem to have a on-source-loaded event that reliably works
               // for this purpose.
               setTimeout(function () {
-                console.log('waited for layer to load.');
+                // console.log('waited for layer to load.');
                 if (_this2.map.isSourceLoaded('geo')) {
                   _this2.createFramesSafely();
                 } else {
