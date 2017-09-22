@@ -53,7 +53,7 @@ export default class GeoLoop {
 
   createFrames() {
     if (!this.ctrl.dataCharacteristics.timeValues) {
-      console.log('no frames');
+      console.log('no series to display');
       return;
     }
 
@@ -65,12 +65,12 @@ export default class GeoLoop {
     if (this.map.isSourceLoaded('geo')) {
       this.createFramesSafely();
     } else {
-      console.log('no geo source in map. maybe not loaded?');
+      // console.log('no geo source in map. maybe not loaded?');
       // this is stupid to use setTimeout.
       // but mapbox doesn't seem to have a on-source-loaded event that reliably works
       // for this purpose.
       setTimeout(() => {
-        console.log('waited for layer to load.');
+        // console.log('waited for layer to load.');
         if (this.map.isSourceLoaded('geo')) {
           this.createFramesSafely();
         } else {
