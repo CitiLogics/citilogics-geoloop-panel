@@ -308,7 +308,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       // expect series.alias to be of the form --> "measure.aggregator {tagKey: tagVal, tagKey: tagVal}"
       const matches = series.alias.match(reg);
       // console.log('matches: ', matches);
-      if (matches.length > 1) {
+      if (matches && matches.length > 1) {
         keyedSeries[matches[1]] = series;
       }
     });
