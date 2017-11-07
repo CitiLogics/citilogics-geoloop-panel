@@ -56,6 +56,8 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   constructor($scope, $injector, contextSrv) {
     super($scope, $injector);
 
+    console.log('initializing geoloop control');
+
     this.dataCharacteristics = {};
 
     this.opts = {
@@ -124,6 +126,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     _.defaults(this.panel, panelDefaults.colorRamp);
     _.defaults(this.panel, panelDefaults.sizeRamp);
     _.defaults(this.panel, panelDefaults.geo);
+
     this.setMapProviderOpts();
 
     this.dataFormatter = new DataFormatter(this, kbn);
@@ -133,7 +136,8 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
     this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
 
-    this.loadGeo();
+    console.log('control constructor loading geo:');
+    this.loadGeo(true);
     this.lonLatStr = this.panel.mapCenterLongitude + ',' + this.panel.mapCenterLatitude;
 
     //$scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
@@ -280,6 +284,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   updateGeoDataFeatures() {
+    console.log('updating geo features');
     if (!this.geo || !this.geo.features) {
       console.log('no geo or no features');
       return;
@@ -288,7 +293,10 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       // console.log('geojson source found. removing...');
       this.map.map.removeSource('geo');
     }
-
+    if (!this.dataCharacteristics || !this.dataCharacteristics.timeValues) {
+      console.log('no data yet...');
+      return;
+    }
     // clear timeseries data from geojson data
     this.dataCharacteristics.timeValues.forEach((tv) => {
       this.geo.features.forEach((feature) => {
@@ -374,6 +382,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   link(scope, elem, attrs, ctrl) {
     mapRenderer(scope, elem, attrs, ctrl);
   }
+
 }
 
 GeoLoopCtrl.templateUrl = 'module.html';

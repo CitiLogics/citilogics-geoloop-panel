@@ -122,6 +122,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
 
           var _this = _possibleConstructorReturn(this, (GeoLoopCtrl.__proto__ || Object.getPrototypeOf(GeoLoopCtrl)).call(this, $scope, $injector));
 
+          console.log('initializing geoloop control');
+
           _this.dataCharacteristics = {};
 
           _this.opts = {
@@ -190,6 +192,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _.defaults(_this.panel, panelDefaults.colorRamp);
           _.defaults(_this.panel, panelDefaults.sizeRamp);
           _.defaults(_this.panel, panelDefaults.geo);
+
           _this.setMapProviderOpts();
 
           _this.dataFormatter = new DataFormatter(_this, kbn);
@@ -199,7 +202,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _this.events.on('panel-teardown', _this.onPanelTeardown.bind(_this));
           _this.events.on('data-snapshot-load', _this.onDataSnapshotLoad.bind(_this));
 
-          _this.loadGeo();
+          console.log('control constructor loading geo:');
+          _this.loadGeo(true);
           _this.lonLatStr = _this.panel.mapCenterLongitude + ',' + _this.panel.mapCenterLatitude;
 
           //$scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
@@ -371,6 +375,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           value: function updateGeoDataFeatures() {
             var _this4 = this;
 
+            console.log('updating geo features');
             if (!this.geo || !this.geo.features) {
               console.log('no geo or no features');
               return;
@@ -379,7 +384,10 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               // console.log('geojson source found. removing...');
               this.map.map.removeSource('geo');
             }
-
+            if (!this.dataCharacteristics || !this.dataCharacteristics.timeValues) {
+              console.log('no data yet...');
+              return;
+            }
             // clear timeseries data from geojson data
             this.dataCharacteristics.timeValues.forEach(function (tv) {
               _this4.geo.features.forEach(function (feature) {
