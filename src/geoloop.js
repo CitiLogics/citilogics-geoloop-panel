@@ -187,8 +187,8 @@ export default class GeoLoop {
     const slider = d3.select('#map_' + this.ctrl.panel.id + '_slider')
       .attr('min', 0)
       .attr('max', this.frames.length);
-
   }
+
 
   startAnimation() {
     if (this.animation) {

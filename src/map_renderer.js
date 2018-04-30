@@ -15,7 +15,7 @@ export default function link(scope, elem, attrs, ctrl) {
   });
 
   function render() {
-    console.log("called into RENDER");
+    console.log('called into RENDER');
     if (!ctrl.map) {
       // console.log('creating new map');
       ctrl.map = new GeoLoop(ctrl, mapContainer[0]);

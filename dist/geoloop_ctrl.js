@@ -117,7 +117,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
       GeoLoopCtrl = function (_MetricsPanelCtrl) {
         _inherits(GeoLoopCtrl, _MetricsPanelCtrl);
 
-        function GeoLoopCtrl($scope, $injector, contextSrv) {
+        function GeoLoopCtrl($scope, $injector, ctxSrv) {
           _classCallCheck(this, GeoLoopCtrl);
 
           var _this = _possibleConstructorReturn(this, (GeoLoopCtrl.__proto__ || Object.getPrototypeOf(GeoLoopCtrl)).call(this, $scope, $injector));
@@ -206,8 +206,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _this.loadGeo(true);
           _this.lonLatStr = _this.panel.mapCenterLongitude + ',' + _this.panel.mapCenterLatitude;
 
-          //$scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
-          //$scope.$root.onAppEvent('hide-dash-editor', this.doMapResize());
+          // $scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
+          // $scope.$root.onAppEvent('hide-dash-editor', this.doMapResize());
           return _this;
         }
 
