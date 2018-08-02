@@ -20,6 +20,7 @@ const panelDefaults = {
   userInteractionEnabled: true,
   animationSpeed: 1, // # of seconds animation time per day of data
   animationPause: 500, // millisecond pause at end of animation loop
+  hideFeaturesWithNoData: true,
   geoIdTag: 'geo_id',
   geoIdPath: 'id',
   geo: {
@@ -328,6 +329,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     // console.log('keyed series: ', keyedSeries);
 
     // put data into features.
+    const featureIdsWithData = [];
     this.geo.features.forEach((feature) => {
       if (!feature.properties) {
         feature.properties = {};
@@ -342,14 +344,29 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
           const val = point[0];
           feature.properties['f-' + time] = val;
         });
+        featureIdsWithData.push(featureId);
       }
     });
 
-    if (this.geo && this.map) {
+
+    let result = this.geo;
+    if (this.panel.hideFeaturesWithNoData) {
+      // Create array of features only containing features with data.
+      const filteredFeatures = this.geo.features.filter((feature) => {
+        const featureId = this.panel.geoIdPath.split('.').reduce((obj, key) => obj[key], feature);
+        return featureIdsWithData.findIndex(entry => entry === featureId) >= 0;
+      });
+
+      // Create copy of geo object but with the filtered subset of features.
+      result = Object.assign({}, this.geo);
+      result.features = filteredFeatures;
+    }
+
+    if (result && this.map) {
       console.log('adding geojson source...');
       this.map.map.addSource('geo', {
         type: 'geojson',
-        data: this.geo
+        data: result
       });
     } else {
       console.log('not adding source because no map');
