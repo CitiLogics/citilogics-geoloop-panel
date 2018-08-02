@@ -109,5 +109,9 @@
         <div class="gf-form" ng-show="ctrl.panel.colorRamp.codeTo == 'measurement'">
             <label class="gf-form-label width-20"><img ng-src="{{ctrl.getColorScaleImgUrl()}}" class="geoloop-img-fill" /></label>
         </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Opacity</label>
+            <input type="number" min="0" max="1" step="0.1" class="input-small gf-form-input width-10" ng-model="ctrl.panel.colorRamp.opacity" ng-change="ctrl.render()" placeholder="0.5" ng-model-onblur />
+        </div>
     </div>
 </div>
