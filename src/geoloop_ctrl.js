@@ -6,6 +6,7 @@ import {contextSrv} from 'app/core/core';
 
 import _ from 'lodash';
 import * as d3 from './libs/d3';
+import csscolorparser from './libs/csscolorparser';
 import mapRenderer from './map_renderer';
 import DataFormatter from './data_formatter';
 import './css/geoloop-panel.css!';
@@ -19,6 +20,7 @@ const panelDefaults = {
   userInteractionEnabled: true,
   animationSpeed: 1, // # of seconds animation time per day of data
   animationPause: 500, // millisecond pause at end of animation loop
+  hideFeaturesWithNoData: true,
   geoIdTag: 'geo_id',
   geoIdPath: 'id',
   geo: {
@@ -48,12 +50,13 @@ const panelDefaults = {
     maxValue: 100,
     scaleName: 'viridis', // one of D3's color ramps
     showLegend: true,
-    legendPosition: 'l'
+    legendPosition: 'l',
+    opacity: 0.5
   },
 };
 
 export default class GeoLoopCtrl extends MetricsPanelCtrl {
-  constructor($scope, $injector, ctxSrv) {
+  constructor($scope, $injector) {
     super($scope, $injector);
 
     console.log('initializing geoloop control');
@@ -326,6 +329,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     // console.log('keyed series: ', keyedSeries);
 
     // put data into features.
+    const featureIdsWithData = [];
     this.geo.features.forEach((feature) => {
       if (!feature.properties) {
         feature.properties = {};
@@ -340,14 +344,29 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
           const val = point[0];
           feature.properties['f-' + time] = val;
         });
+        featureIdsWithData.push(featureId);
       }
     });
 
-    if (this.geo && this.map) {
+
+    let result = this.geo;
+    if (this.panel.hideFeaturesWithNoData) {
+      // Create array of features only containing features with data.
+      const filteredFeatures = this.geo.features.filter((feature) => {
+        const featureId = this.panel.geoIdPath.split('.').reduce((obj, key) => obj[key], feature);
+        return featureIdsWithData.findIndex(entry => entry === featureId) >= 0;
+      });
+
+      // Create copy of geo object but with the filtered subset of features.
+      result = Object.assign({}, this.geo);
+      result.features = filteredFeatures;
+    }
+
+    if (result && this.map) {
       console.log('adding geojson source...');
       this.map.map.addSource('geo', {
         type: 'geojson',
-        data: this.geo
+        data: result
       });
     } else {
       console.log('not adding source because no map');
@@ -357,15 +376,23 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 
   updateRamp() { // dc :: data characteristics (dc{timeValues, min, max})
     const dc = this.dataCharacteristics;
+    let colorInterpolator;
     if (this.panel.colorRamp.codeTo === 'fixed') {
-      this.panel.colorInterpolator = () => { return this.panel.colorRamp.fixedValue; };
+      colorInterpolator = () => this.panel.colorRamp.fixedValue;
     } else {
       const inputRange = this.panel.colorRamp.auto ? [dc.min, dc.max] : [this.panel.colorRamp.minValue, this.panel.colorRamp.maxValue];
       const theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
       // console.log('color ramp name: ', this.panel.colorRamp.scaleName);
       // console.log('color ramp: ', theRamp);
-      this.panel.colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
+      colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
     }
+
+    this.panel.colorInterpolator = (value) => {
+      const scaleColor = colorInterpolator(value);
+      const color = csscolorparser.parseCSSColor(scaleColor);
+      const opacity = _.clamp(_.defaultTo(this.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
+      return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + opacity + ')';
+    };
 
     if (this.panel.sizeRamp.codeTo === 'fixed') {
       this.panel.sizeInterpolator = () => { return this.panel.sizeRamp.fixedValue; };

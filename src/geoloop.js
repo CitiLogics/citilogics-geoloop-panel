@@ -68,15 +68,20 @@ export default class GeoLoop {
       this.createFramesSafely();
     } else {
       // console.log('no geo source in map. maybe not loaded?');
-      // this is stupid to use setTimeout.
+      // this is stupid to use setInterval.
       // but mapbox doesn't seem to have a on-source-loaded event that reliably works
       // for this purpose.
-      setTimeout(() => {
+      let attemptsLeft = 10;
+      const interval = setInterval(() => {
         // console.log('waited for layer to load.');
         if (this.map.isSourceLoaded('geo')) {
           this.createFramesSafely();
+          clearInterval(interval);
         } else {
           console.log('still no geo source. try refresh manually?');
+          if (--attemptsLeft <= 0) {
+            clearInterval(interval);
+          }
         }
       }, 1000);
     }
