@@ -64,19 +64,34 @@ export default class GeoLoop {
       return;
     }
 
+    if (!this.map) {
+      console.log('no map found');
+      return;
+    }
+
     if (this.map.isSourceLoaded('geo')) {
+      console.log('geo source found on first try. Starting to build frames.');
       this.createFramesSafely();
     } else {
       // console.log('no geo source in map. maybe not loaded?');
-      // this is stupid to use setTimeout.
+      // this is stupid to use setInterval.
       // but mapbox doesn't seem to have a on-source-loaded event that reliably works
       // for this purpose.
-      setTimeout(() => {
-        // console.log('waited for layer to load.');
-        if (this.map.isSourceLoaded('geo')) {
+      let attemptsLeft = 10;
+      const interval = setInterval(() => {
+        if (!this.map) {
+          console.log('map was unloaded while waiting for geo source');
+          clearInterval(interval);
+        } else if (this.map.isSourceLoaded('geo')) {
+          console.log('geo source found. Starting to build frames.');
+          clearInterval(interval);
           this.createFramesSafely();
         } else {
           console.log('still no geo source. try refresh manually?');
+          attemptsLeft -= 1;
+          if (attemptsLeft <= 0) {
+            clearInterval(interval);
+          }
         }
       }, 1000);
     }
@@ -188,6 +203,7 @@ export default class GeoLoop {
       .attr('min', 0)
       .attr('max', this.frames.length);
   }
+
 
   startAnimation() {
     if (this.animation) {
