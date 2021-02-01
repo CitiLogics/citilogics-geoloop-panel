@@ -117,7 +117,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
       GeoLoopCtrl = function (_MetricsPanelCtrl) {
         _inherits(GeoLoopCtrl, _MetricsPanelCtrl);
 
-        function GeoLoopCtrl($scope, $injector, ctxSrv) {
+        function GeoLoopCtrl($scope, $injector, contextSrv) {
           _classCallCheck(this, GeoLoopCtrl);
 
           var _this = _possibleConstructorReturn(this, (GeoLoopCtrl.__proto__ || Object.getPrototypeOf(GeoLoopCtrl)).call(this, $scope, $injector));
