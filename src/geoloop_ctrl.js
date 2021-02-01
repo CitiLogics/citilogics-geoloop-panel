@@ -18,8 +18,8 @@ const panelDefaults = {
   mapCenterLongitude: 0,
   initialZoom: 8,
   userInteractionEnabled: true,
-  animationSpeed: 1, // # of seconds animation time per day of data - has no effect
-  animationPause: 500, // millisecond pause at end of animation loop - has no effect
+  animationSpeed: 1, // # of seconds animation time per day of data
+  animationPause: 500, // millisecond pause at end of animation loop
   hideFeaturesWithNoData: true,
   hideTime: false,  // hide the time in the overlay and only display the date
   framesPerSecond: 5,
@@ -55,6 +55,7 @@ const panelDefaults = {
     legendPosition: 'l',
     opacity: 0.5
   },
+  pause: false,  // for the pause button
 };
 
 export default class GeoLoopCtrl extends MetricsPanelCtrl {
@@ -403,6 +404,10 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 /* eslint class-methods-use-this: 0 */
   link(scope, elem, attrs, ctrl) {
     mapRenderer(scope, elem, attrs, ctrl);
+  }
+
+  togglePause() {
+    this.panel.pause ^= 1;  // toggle
   }
 }
 
