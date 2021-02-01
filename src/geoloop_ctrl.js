@@ -53,7 +53,7 @@ const panelDefaults = {
 };
 
 export default class GeoLoopCtrl extends MetricsPanelCtrl {
-  constructor($scope, $injector, contextSrv) {
+  constructor($scope, $injector) {
     super($scope, $injector);
 
     this.dataCharacteristics = {};
@@ -136,8 +136,8 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     this.loadGeo();
     this.lonLatStr = this.panel.mapCenterLongitude + ',' + this.panel.mapCenterLatitude;
 
-    //$scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
-    //$scope.$root.onAppEvent('hide-dash-editor', this.doMapResize());
+    // $scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
+    // $scope.$root.onAppEvent('hide-dash-editor', this.doMapResize());
   }
 
   getColorScaleImgUrl() {
@@ -341,8 +341,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
         type: 'geojson',
         data: this.geo
       });
-    }
-    else {
+    } else {
       console.log('not adding source because no map');
     }
   }
