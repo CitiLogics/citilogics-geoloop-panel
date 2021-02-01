@@ -111,7 +111,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               return;
             }
 
-            if (this.map.map.isSourceLoaded('geo')) {
+            if (this.map.isSourceLoaded('geo')) {
+              console.log('geo source found on first try. Starting to build frames.');
               this.createFramesSafely();
             } else {
               // console.log('no geo source in map. maybe not loaded?');
@@ -121,8 +122,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               var attemptsLeft = 10;
               var interval = setInterval(function () {
                 // console.log('waited for layer to load.');
-                if (_this2.map.map.isSourceLoaded('geo')) {
-                  console.log('geo source found.');
+                if (_this2.map.isSourceLoaded('geo')) {
+                  console.log('geo source found. Starting to build frames.');
                   clearInterval(interval);
                   _this2.createFramesSafely();
                 } else {
