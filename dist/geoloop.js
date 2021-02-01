@@ -115,15 +115,22 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               this.createFramesSafely();
             } else {
               // console.log('no geo source in map. maybe not loaded?');
-              // this is stupid to use setTimeout.
+              // this is stupid to use setInterval.
               // but mapbox doesn't seem to have a on-source-loaded event that reliably works
               // for this purpose.
-              setTimeout(function () {
+              var attemptsLeft = 10;
+              var interval = setInterval(function () {
                 // console.log('waited for layer to load.');
                 if (_this2.map.isSourceLoaded('geo')) {
+                  console.log('geo source found.');
+                  clearInterval(interval);
                   _this2.createFramesSafely();
                 } else {
                   console.log('still no geo source. try refresh manually?');
+                  attemptsLeft -= 1;
+                  if (attemptsLeft <= 0) {
+                    clearInterval(interval);
+                  }
                 }
               }, 1000);
             }

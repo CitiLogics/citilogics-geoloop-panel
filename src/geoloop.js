@@ -80,7 +80,8 @@ export default class GeoLoop {
           this.createFramesSafely();
         } else {
           console.log('still no geo source. try refresh manually?');
-          if (--attemptsLeft <= 0) {
+          attemptsLeft -= 1;
+          if (attemptsLeft <= 0) {
             clearInterval(interval);
           }
         }

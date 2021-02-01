@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn', 'app/core/core', 'lodash', './libs/d3', './map_renderer', './data_formatter', './css/geoloop-panel.css!'], function (_export, _context) {
+System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn', 'app/core/core', 'lodash', './libs/d3', './libs/csscolorparser', './map_renderer', './data_formatter', './css/geoloop-panel.css!'], function (_export, _context) {
   "use strict";
 
-  var MetricsPanelCtrl, TimeSeries, kbn, contextSrv, _, d3, mapRenderer, DataFormatter, _createClass, panelDefaults, GeoLoopCtrl;
+  var MetricsPanelCtrl, TimeSeries, kbn, contextSrv, _, d3, csscolorparser, mapRenderer, DataFormatter, _createClass, panelDefaults, GeoLoopCtrl;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -48,6 +48,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
       _ = _lodash.default;
     }, function (_libsD) {
       d3 = _libsD;
+    }, function (_libsCsscolorparser) {
+      csscolorparser = _libsCsscolorparser.default;
     }, function (_map_renderer) {
       mapRenderer = _map_renderer.default;
     }, function (_data_formatter) {
@@ -81,6 +83,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         userInteractionEnabled: true,
         animationSpeed: 1, // # of seconds animation time per day of data
         animationPause: 500, // millisecond pause at end of animation loop
+        hideFeaturesWithNoData: true,
         geoIdTag: 'geo_id',
         geoIdPath: 'id',
         geo: {
@@ -110,14 +113,15 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           maxValue: 100,
           scaleName: 'viridis', // one of D3's color ramps
           showLegend: true,
-          legendPosition: 'l'
+          legendPosition: 'l',
+          opacity: 0.5
         }
       };
 
       GeoLoopCtrl = function (_MetricsPanelCtrl) {
         _inherits(GeoLoopCtrl, _MetricsPanelCtrl);
 
-        function GeoLoopCtrl($scope, $injector, contextSrv) {
+        function GeoLoopCtrl($scope, $injector) {
           _classCallCheck(this, GeoLoopCtrl);
 
           var _this = _possibleConstructorReturn(this, (GeoLoopCtrl.__proto__ || Object.getPrototypeOf(GeoLoopCtrl)).call(this, $scope, $injector));
@@ -416,6 +420,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             // console.log('keyed series: ', keyedSeries);
 
             // put data into features.
+            var featureIdsWithData = [];
             this.geo.features.forEach(function (feature) {
               if (!feature.properties) {
                 feature.properties = {};
@@ -432,14 +437,32 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                   var val = point[0];
                   feature.properties['f-' + time] = val;
                 });
+                featureIdsWithData.push(featureId);
               }
             });
 
-            if (this.geo && this.map) {
+            var result = this.geo;
+            if (this.panel.hideFeaturesWithNoData) {
+              // Create array of features only containing features with data.
+              var filteredFeatures = this.geo.features.filter(function (feature) {
+                var featureId = _this4.panel.geoIdPath.split('.').reduce(function (obj, key) {
+                  return obj[key];
+                }, feature);
+                return featureIdsWithData.findIndex(function (entry) {
+                  return entry === featureId;
+                }) >= 0;
+              });
+
+              // Create copy of geo object but with the filtered subset of features.
+              result = Object.assign({}, this.geo);
+              result.features = filteredFeatures;
+            }
+
+            if (result && this.map) {
               console.log('adding geojson source...');
               this.map.map.addSource('geo', {
                 type: 'geojson',
-                data: this.geo
+                data: result
               });
             } else {
               console.log('not adding source because no map');
@@ -452,8 +475,9 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
 
             // dc :: data characteristics (dc{timeValues, min, max})
             var dc = this.dataCharacteristics;
+            var colorInterpolator = void 0;
             if (this.panel.colorRamp.codeTo === 'fixed') {
-              this.panel.colorInterpolator = function () {
+              colorInterpolator = function colorInterpolator() {
                 return _this5.panel.colorRamp.fixedValue;
               };
             } else {
@@ -461,8 +485,15 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               var theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
               // console.log('color ramp name: ', this.panel.colorRamp.scaleName);
               // console.log('color ramp: ', theRamp);
-              this.panel.colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
+              colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
             }
+
+            this.panel.colorInterpolator = function (value) {
+              var scaleColor = colorInterpolator(value);
+              var color = csscolorparser.parseCSSColor(scaleColor);
+              var opacity = _.clamp(_.defaultTo(_this5.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
+              return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + opacity + ')';
+            };
 
             if (this.panel.sizeRamp.codeTo === 'fixed') {
               this.panel.sizeInterpolator = function () {

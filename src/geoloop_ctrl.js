@@ -390,7 +390,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     this.panel.colorInterpolator = (value) => {
       const scaleColor = colorInterpolator(value);
       const color = csscolorparser.parseCSSColor(scaleColor);
-      const opacity = _.clamp(_.defaultTo(this.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
+      const opacity = _.clamp(_.defaultTo(this.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
       return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + opacity + ')';
     };
 
