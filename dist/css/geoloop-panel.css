@@ -30,7 +30,6 @@
 
 .map-overlay {
   font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  color: #333333;
   position: absolute;
   width: 25%;
   top: 0;
@@ -39,8 +38,7 @@
 }
 
 .map-overlay .map-overlay-inner {
-  background-color: #ffffff80;
-  box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+  background-color: #8888;
   border-radius: 3px;
   padding: 10px;
   margin-bottom: 10px;
@@ -69,6 +67,7 @@
 
 .map-overlay button {
   background-color: transparent;
+  border: none;
 }
 
 .map-overlay button img {
