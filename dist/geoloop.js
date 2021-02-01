@@ -64,8 +64,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', function () {
             _this.pause = true;
             _this.stopAnimation();
-            _this.currentFrameIndex = parseInt(d3.select('#map_' + _this.ctrl.panel.id + '_slider').property('value'), 10);
-            _this.stepFrame();
+            var targetFrame = parseInt(d3.select('#map_' + _this.ctrl.panel.id + '_slider').property('value'), 10);
+            _this.stepFrame(targetFrame);
           });
         }
 
@@ -297,6 +297,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'stepFrame',
           value: function stepFrame() {
+            var targetFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : -1;
+
             if (!this.map) {
               return;
             }
@@ -305,10 +307,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               return;
             }
             var oldFrame = 'f-' + this.frames[this.currentFrameIndex];
-            this.currentFrameIndex += 1;
-            if (this.currentFrameIndex >= this.frames.length) {
-              this.currentFrameIndex = 0;
-            }
+            this.currentFrameIndex = targetFrame >= 0 ? targetFrame : this.currentFrameIndex + 1;
+            this.currentFrameIndex %= this.frames.length;
             var newFrame = 'f-' + this.frames[this.currentFrameIndex];
 
             var opacitySelectors = {

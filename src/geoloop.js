@@ -26,8 +26,8 @@ export default class GeoLoop {
     d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', () => {
       this.pause = true;
       this.stopAnimation();
-      this.currentFrameIndex = parseInt(d3.select('#map_' + this.ctrl.panel.id + '_slider').property('value'), 10);
-      this.stepFrame();
+      const targetFrame = parseInt(d3.select('#map_' + this.ctrl.panel.id + '_slider').property('value'), 10);
+      this.stepFrame(targetFrame);
     });
   }
 
@@ -242,7 +242,7 @@ export default class GeoLoop {
     this.animation = null;
   }
 
-  stepFrame() {
+  stepFrame(targetFrame = -1) {
     if (!this.map) {
       return;
     }
@@ -251,10 +251,8 @@ export default class GeoLoop {
       return;
     }
     const oldFrame = 'f-' + this.frames[this.currentFrameIndex];
-    this.currentFrameIndex += 1;
-    if (this.currentFrameIndex >= this.frames.length) {
-      this.currentFrameIndex = 0;
-    }
+    this.currentFrameIndex = targetFrame >= 0 ? targetFrame : this.currentFrameIndex + 1;
+    this.currentFrameIndex %= this.frames.length;
     const newFrame = 'f-' + this.frames[this.currentFrameIndex];
 
     const opacitySelectors = {
