@@ -224,7 +224,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
         jsonpCallback: this.panel.geo.callback,
         dataType: 'jsonp',
         success: (res) => {
-          console.log('downloaded geojson');
+          console.log('downloaded geojson: ' + res);
           this.geo = res;
           this.updateGeoDataFeatures();
           this.render();
@@ -288,12 +288,16 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 
   updateGeoDataFeatures() {
     console.log('updating geo features');
-    if (!this.geo || !this.geo.features) {
-      console.log('no geo or no features');
+    if (!this.geo) {
+      console.log('no geo');
+      return;
+    }
+    if (this.geo.features) {
+      console.log('no geo features');
       return;
     }
     if (this.map && this.map.map.getSource('geo')) {
-      // console.log('geojson source found. removing...');
+      console.log('geojson source found. removing...');
       this.map.map.removeSource('geo');
     }
     if (!this.dataCharacteristics || !this.dataCharacteristics.timeValues) {

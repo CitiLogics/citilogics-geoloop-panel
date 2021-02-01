@@ -306,7 +306,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                 jsonpCallback: this.panel.geo.callback,
                 dataType: 'jsonp',
                 success: function success(res) {
-                  console.log('downloaded geojson');
+                  console.log('downloaded geojson: ' + res);
                   _this3.geo = res;
                   _this3.updateGeoDataFeatures();
                   _this3.render();
@@ -380,12 +380,16 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             var _this4 = this;
 
             console.log('updating geo features');
-            if (!this.geo || !this.geo.features) {
-              console.log('no geo or no features');
+            if (!this.geo) {
+              console.log('no geo');
+              return;
+            }
+            if (this.geo.features) {
+              console.log('no geo features');
               return;
             }
             if (this.map && this.map.map.getSource('geo')) {
-              // console.log('geojson source found. removing...');
+              console.log('geojson source found. removing...');
               this.map.map.removeSource('geo');
             }
             if (!this.dataCharacteristics || !this.dataCharacteristics.timeValues) {
