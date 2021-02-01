@@ -113,6 +113,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
 
             if (!this.map) {
               console.log('no map found');
+              return;
             }
 
             if (this.map.isSourceLoaded('geo')) {
@@ -125,8 +126,10 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               // for this purpose.
               var attemptsLeft = 10;
               var interval = setInterval(function () {
-                // console.log('waited for layer to load.');
-                if (_this2.map.isSourceLoaded('geo')) {
+                if (!_this2.map) {
+                  console.log('map was unloaded while waiting for geo source');
+                  clearInterval(interval);
+                } else if (_this2.map.isSourceLoaded('geo')) {
                   console.log('geo source found. Starting to build frames.');
                   clearInterval(interval);
                   _this2.createFramesSafely();
