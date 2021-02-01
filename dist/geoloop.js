@@ -111,6 +111,10 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               return;
             }
 
+            if (!this.map) {
+              console.log('no map found');
+            }
+
             if (this.map.isSourceLoaded('geo')) {
               console.log('geo source found on first try. Starting to build frames.');
               this.createFramesSafely();
