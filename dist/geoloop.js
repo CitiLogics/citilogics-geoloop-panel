@@ -111,7 +111,12 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             var _this2 = this;
 
             this.frames.forEach(function (item) {
-              _this2.map.removeLayer('f-' + item);
+              try {
+                _this2.map.removeLayer('f-' + item);
+              } catch (e) {
+                // print error, but don't stop
+                console.error(e);
+              }
             });
             this.frames = [];
           }
