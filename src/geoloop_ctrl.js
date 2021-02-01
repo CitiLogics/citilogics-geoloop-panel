@@ -370,15 +370,23 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 
   updateRamp() { // dc :: data characteristics (dc{timeValues, min, max})
     const dc = this.dataCharacteristics;
+    let colorInterpolator;
     if (this.panel.colorRamp.codeTo === 'fixed') {
-      this.panel.colorInterpolator = () => { return this.panel.colorRamp.fixedValue; };
+      colorInterpolator = () => this.panel.colorRamp.fixedValue;
     } else {
       const inputRange = this.panel.colorRamp.auto ? [dc.min, dc.max] : [this.panel.colorRamp.minValue, this.panel.colorRamp.maxValue];
       const theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
       // console.log('color ramp name: ', this.panel.colorRamp.scaleName);
       // console.log('color ramp: ', theRamp);
-      this.panel.colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
+      colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
     }
+
+    this.panel.colorInterpolator = (value) => {
+      const scaleColor = colorInterpolator(value);
+      const color = csscolorparser.parseCSSColor(scaleColor);
+      const opacity = _.clamp(_.defaultTo(this.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
+      return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + opacity + ')';
+    };
 
     if (this.panel.sizeRamp.codeTo === 'fixed') {
       this.panel.sizeInterpolator = () => { return this.panel.sizeRamp.fixedValue; };

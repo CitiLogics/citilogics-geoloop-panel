@@ -470,8 +470,9 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
 
             // dc :: data characteristics (dc{timeValues, min, max})
             var dc = this.dataCharacteristics;
+            var colorInterpolator = void 0;
             if (this.panel.colorRamp.codeTo === 'fixed') {
-              this.panel.colorInterpolator = function () {
+              colorInterpolator = function colorInterpolator() {
                 return _this5.panel.colorRamp.fixedValue;
               };
             } else {
@@ -479,8 +480,15 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               var theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
               // console.log('color ramp name: ', this.panel.colorRamp.scaleName);
               // console.log('color ramp: ', theRamp);
-              this.panel.colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
+              colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
             }
+
+            this.panel.colorInterpolator = function (value) {
+              var scaleColor = colorInterpolator(value);
+              var color = csscolorparser.parseCSSColor(scaleColor);
+              var opacity = _.clamp(_.defaultTo(_this5.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
+              return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + opacity + ')';
+            };
 
             if (this.panel.sizeRamp.codeTo === 'fixed') {
               this.panel.sizeInterpolator = function () {
