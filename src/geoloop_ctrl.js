@@ -364,6 +364,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       // Create copy of geo object but with the filtered subset of features.
       result = Object.assign({}, this.geo);
       result.features = filteredFeatures;
+      console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
     }
 
     if (result && this.map) {
