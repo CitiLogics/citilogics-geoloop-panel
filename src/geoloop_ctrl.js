@@ -6,6 +6,7 @@ import {contextSrv} from 'app/core/core';
 
 import _ from 'lodash';
 import * as d3 from './libs/d3';
+import csscolorparser from './libs/csscolorparser';
 import mapRenderer from './map_renderer';
 import DataFormatter from './data_formatter';
 import './css/geoloop-panel.css!';
@@ -19,6 +20,7 @@ const panelDefaults = {
   userInteractionEnabled: true,
   animationSpeed: 1, // # of seconds animation time per day of data
   animationPause: 500, // millisecond pause at end of animation loop
+  hideFeaturesWithNoData: true,
   geoIdTag: 'geo_id',
   geoIdPath: 'id',
   geo: {
@@ -48,13 +50,16 @@ const panelDefaults = {
     maxValue: 100,
     scaleName: 'viridis', // one of D3's color ramps
     showLegend: true,
-    legendPosition: 'l'
+    legendPosition: 'l',
+    opacity: 0.5
   },
 };
 
 export default class GeoLoopCtrl extends MetricsPanelCtrl {
   constructor($scope, $injector) {
     super($scope, $injector);
+
+    console.log('initializing geoloop control');
 
     this.dataCharacteristics = {};
 
@@ -124,6 +129,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     _.defaults(this.panel, panelDefaults.colorRamp);
     _.defaults(this.panel, panelDefaults.sizeRamp);
     _.defaults(this.panel, panelDefaults.geo);
+
     this.setMapProviderOpts();
 
     this.dataFormatter = new DataFormatter(this, kbn);
@@ -133,7 +139,8 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
     this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
 
-    this.loadGeo();
+    console.log('control constructor loading geo:');
+    this.loadGeo(true);
     this.lonLatStr = this.panel.mapCenterLongitude + ',' + this.panel.mapCenterLatitude;
 
     // $scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
@@ -217,7 +224,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
         jsonpCallback: this.panel.geo.callback,
         dataType: 'jsonp',
         success: (res) => {
-          console.log('downloaded geojson');
+          console.log('downloaded geojson: ' + res);
           this.geo = res;
           this.updateGeoDataFeatures();
           this.render();
@@ -280,15 +287,23 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   updateGeoDataFeatures() {
-    if (!this.geo || !this.geo.features) {
-      console.log('no geo or no features');
+    console.log('updating geo features');
+    if (!this.geo) {
+      console.log('no geo');
+      return;
+    }
+    if (this.geo.features) {
+      console.log('no geo features');
       return;
     }
     if (this.map && this.map.map.getSource('geo')) {
-      // console.log('geojson source found. removing...');
+      console.log('geojson source found. removing...');
       this.map.map.removeSource('geo');
     }
-
+    if (!this.dataCharacteristics || !this.dataCharacteristics.timeValues) {
+      console.log('no data yet...');
+      return;
+    }
     // clear timeseries data from geojson data
     this.dataCharacteristics.timeValues.forEach((tv) => {
       this.geo.features.forEach((feature) => {
@@ -318,6 +333,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     // console.log('keyed series: ', keyedSeries);
 
     // put data into features.
+    const featureIdsWithData = [];
     this.geo.features.forEach((feature) => {
       if (!feature.properties) {
         feature.properties = {};
@@ -332,14 +348,30 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
           const val = point[0];
           feature.properties['f-' + time] = val;
         });
+        featureIdsWithData.push(featureId);
       }
     });
 
-    if (this.geo && this.map) {
+
+    let result = this.geo;
+    if (this.panel.hideFeaturesWithNoData) {
+      // Create array of features only containing features with data.
+      const filteredFeatures = this.geo.features.filter((feature) => {
+        const featureId = this.panel.geoIdPath.split('.').reduce((obj, key) => obj[key], feature);
+        return featureIdsWithData.findIndex(entry => entry === featureId) >= 0;
+      });
+
+      // Create copy of geo object but with the filtered subset of features.
+      result = Object.assign({}, this.geo);
+      result.features = filteredFeatures;
+      console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
+    }
+
+    if (result && this.map) {
       console.log('adding geojson source...');
       this.map.map.addSource('geo', {
         type: 'geojson',
-        data: this.geo
+        data: result
       });
     } else {
       console.log('not adding source because no map');
@@ -349,15 +381,23 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 
   updateRamp() { // dc :: data characteristics (dc{timeValues, min, max})
     const dc = this.dataCharacteristics;
+    let colorInterpolator;
     if (this.panel.colorRamp.codeTo === 'fixed') {
-      this.panel.colorInterpolator = () => { return this.panel.colorRamp.fixedValue; };
+      colorInterpolator = () => this.panel.colorRamp.fixedValue;
     } else {
       const inputRange = this.panel.colorRamp.auto ? [dc.min, dc.max] : [this.panel.colorRamp.minValue, this.panel.colorRamp.maxValue];
       const theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
       // console.log('color ramp name: ', this.panel.colorRamp.scaleName);
       // console.log('color ramp: ', theRamp);
-      this.panel.colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
+      colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
     }
+
+    this.panel.colorInterpolator = (value) => {
+      const scaleColor = colorInterpolator(value);
+      const color = csscolorparser.parseCSSColor(scaleColor);
+      const opacity = _.clamp(_.defaultTo(this.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
+      return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + opacity + ')';
+    };
 
     if (this.panel.sizeRamp.codeTo === 'fixed') {
       this.panel.sizeInterpolator = () => { return this.panel.sizeRamp.fixedValue; };
@@ -373,6 +413,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   link(scope, elem, attrs, ctrl) {
     mapRenderer(scope, elem, attrs, ctrl);
   }
+
 }
 
 GeoLoopCtrl.templateUrl = 'module.html';
