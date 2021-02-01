@@ -138,7 +138,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
     this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
 
-    this.loadGeo();
+    this.loadGeo(true);
     this.lonLatStr = this.panel.mapCenterLongitude + ',' + this.panel.mapCenterLatitude;
 
     // $scope.$root.onAppEvent('show-dash-editor', this.doMapResize());

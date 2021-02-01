@@ -205,7 +205,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _this.events.on('panel-teardown', _this.onPanelTeardown.bind(_this));
           _this.events.on('data-snapshot-load', _this.onDataSnapshotLoad.bind(_this));
 
-          _this.loadGeo();
+          _this.loadGeo(true);
           _this.lonLatStr = _this.panel.mapCenterLongitude + ',' + _this.panel.mapCenterLatitude;
 
           // $scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
@@ -414,6 +414,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             // console.log('keyed series: ', keyedSeries);
 
             // put data into features.
+            var featureIdsWithData = [];
             this.geo.features.forEach(function (feature) {
               if (!feature.properties) {
                 feature.properties = {};
@@ -430,14 +431,33 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                   var val = point[0];
                   feature.properties['f-' + time] = val;
                 });
+                featureIdsWithData.push(featureId);
               }
             });
 
-            if (this.geo && this.map) {
+            var result = this.geo;
+            if (this.panel.hideFeaturesWithNoData) {
+              // Create array of features only containing features with data.
+              var filteredFeatures = this.geo.features.filter(function (feature) {
+                var featureId = _this4.panel.geoIdPath.split('.').reduce(function (obj, key) {
+                  return obj[key];
+                }, feature);
+                return featureIdsWithData.findIndex(function (entry) {
+                  return entry === featureId;
+                }) >= 0;
+              });
+
+              // Create copy of geo object but with the filtered subset of features.
+              result = Object.assign({}, this.geo);
+              result.features = filteredFeatures;
+              console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
+            }
+
+            if (result && this.map) {
               console.log('adding geojson source...');
               this.map.map.addSource('geo', {
                 type: 'geojson',
-                data: this.geo
+                data: result
               });
             } else {
               console.log('not adding source because no map');
