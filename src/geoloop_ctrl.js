@@ -21,6 +21,7 @@ const panelDefaults = {
   animationSpeed: 1, // # of seconds animation time per day of data
   animationPause: 500, // millisecond pause at end of animation loop
   hideFeaturesWithNoData: true,
+  hideTime: false,
   geoIdTag: 'geo_id',
   geoIdPath: 'id',
   geo: {
