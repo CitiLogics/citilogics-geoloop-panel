@@ -6,6 +6,7 @@ import {contextSrv} from 'app/core/core';
 
 import _ from 'lodash';
 import * as d3 from './libs/d3';
+import csscolorparser from './libs/csscolorparser';
 import mapRenderer from './map_renderer';
 import DataFormatter from './data_formatter';
 import './css/geoloop-panel.css!';
@@ -19,6 +20,7 @@ const panelDefaults = {
   userInteractionEnabled: true,
   animationSpeed: 1, // # of seconds animation time per day of data
   animationPause: 500, // millisecond pause at end of animation loop
+  hideFeaturesWithNoData: true,
   geoIdTag: 'geo_id',
   geoIdPath: 'id',
   geo: {
@@ -48,13 +50,16 @@ const panelDefaults = {
     maxValue: 100,
     scaleName: 'viridis', // one of D3's color ramps
     showLegend: true,
-    legendPosition: 'l'
+    legendPosition: 'l',
+    opacity: 0.5
   },
 };
 
 export default class GeoLoopCtrl extends MetricsPanelCtrl {
   constructor($scope, $injector) {
     super($scope, $injector);
+
+    console.log('initializing geoloop control');
 
     this.dataCharacteristics = {};
 

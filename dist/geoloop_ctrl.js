@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn', 'app/core/core', 'lodash', './libs/d3', './map_renderer', './data_formatter', './css/geoloop-panel.css!'], function (_export, _context) {
+System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn', 'app/core/core', 'lodash', './libs/d3', './libs/csscolorparser', './map_renderer', './data_formatter', './css/geoloop-panel.css!'], function (_export, _context) {
   "use strict";
 
-  var MetricsPanelCtrl, TimeSeries, kbn, contextSrv, _, d3, mapRenderer, DataFormatter, _createClass, panelDefaults, GeoLoopCtrl;
+  var MetricsPanelCtrl, TimeSeries, kbn, contextSrv, _, d3, csscolorparser, mapRenderer, DataFormatter, _createClass, panelDefaults, GeoLoopCtrl;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -48,6 +48,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
       _ = _lodash.default;
     }, function (_libsD) {
       d3 = _libsD;
+    }, function (_libsCsscolorparser) {
+      csscolorparser = _libsCsscolorparser.default;
     }, function (_map_renderer) {
       mapRenderer = _map_renderer.default;
     }, function (_data_formatter) {
@@ -81,6 +83,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         userInteractionEnabled: true,
         animationSpeed: 1, // # of seconds animation time per day of data
         animationPause: 500, // millisecond pause at end of animation loop
+        hideFeaturesWithNoData: true,
         geoIdTag: 'geo_id',
         geoIdPath: 'id',
         geo: {
@@ -110,7 +113,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           maxValue: 100,
           scaleName: 'viridis', // one of D3's color ramps
           showLegend: true,
-          legendPosition: 'l'
+          legendPosition: 'l',
+          opacity: 0.5
         }
       };
 
@@ -121,6 +125,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _classCallCheck(this, GeoLoopCtrl);
 
           var _this = _possibleConstructorReturn(this, (GeoLoopCtrl.__proto__ || Object.getPrototypeOf(GeoLoopCtrl)).call(this, $scope, $injector));
+
+          console.log('initializing geoloop control');
 
           _this.dataCharacteristics = {};
 
