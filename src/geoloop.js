@@ -245,7 +245,8 @@ export default class GeoLoop {
     this.map.setPaintProperty(newFrame, selector, 1);
     this.map.setPaintProperty(oldFrame, selector, 0);
     const tstamp = this.frames[this.currentFrameIndex] / 1e3;
-    const timeStr = moment.unix(tstamp).format('YYYY-MM-DD HH:mm:ss');
+    const timeStr = moment.unix(tstamp).format('YYYY-MM-DD');
+    // const timeStr = moment.unix(tstamp).format('YYYY-MM-DD HH:mm:ss');
     // console.log('time is ', timeStr);
 
     // set time string in legend

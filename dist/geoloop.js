@@ -297,7 +297,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             this.map.setPaintProperty(newFrame, selector, 1);
             this.map.setPaintProperty(oldFrame, selector, 0);
             var tstamp = this.frames[this.currentFrameIndex] / 1e3;
-            var timeStr = moment.unix(tstamp).format('YYYY-MM-DD HH:mm:ss');
+            var timeStr = moment.unix(tstamp).format('YYYY-MM-DD');
+            // const timeStr = moment.unix(tstamp).format('YYYY-MM-DD HH:mm:ss');
             // console.log('time is ', timeStr);
 
             // set time string in legend
