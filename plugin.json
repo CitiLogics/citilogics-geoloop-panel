@@ -23,8 +23,8 @@
       {"name": "Query", "path": "images/timeseries-query.png"},
       {"name": "Options", "path": "images/geoloop-options.png"}
     ],
-    "version": "1.1.2",
-    "updated": "2018-04-30"
+    "version": "1.1.1",
+    "updated": "2017-09-22"
   },
 
   "dependencies": {

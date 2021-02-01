@@ -6,7 +6,7 @@ System.register(['./geoloop'], function (_export, _context) {
   var GeoLoop;
   function link(scope, elem, attrs, ctrl) {
     var mapContainer = elem.find('.mapcontainer');
-    console.log('initialized map renderer');
+    // console.log('found: ', mapContainer);
 
     ctrl.events.on('render', function () {
       render();
@@ -19,10 +19,9 @@ System.register(['./geoloop'], function (_export, _context) {
     });
 
     function render() {
-      console.log('called into RENDER');
       if (!ctrl.map) {
-        console.log('creating new map');
-        ctrl.map = ctrl.map || new GeoLoop(ctrl, mapContainer[0]); // only update map if there is still nothing
+        // console.log('creating new map');
+        ctrl.map = new GeoLoop(ctrl, mapContainer[0]);
       }
 
       ctrl.map.resize();
