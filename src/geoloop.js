@@ -64,6 +64,10 @@ export default class GeoLoop {
       return;
     }
 
+    if (!this.map) {
+      console.log('no map found');
+    }
+
     if (this.map.isSourceLoaded('geo')) {
       console.log('geo source found on first try. Starting to build frames.');
       this.createFramesSafely();
