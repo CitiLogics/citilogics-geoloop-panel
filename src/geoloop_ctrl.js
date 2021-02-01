@@ -407,7 +407,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   togglePause() {
-    this.panel.pause ^= 1;  // toggle
+    this.panel.pause = !this.panel.pause;  // toggle
   }
 }
 

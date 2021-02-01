@@ -276,6 +276,9 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             if (!this.map) {
               return;
             }
+            if (this.ctrl.panel.pause) {
+              return;
+            }
             if (this.frames.length === 0) {
               // console.log('skipping animation: no frames');
               return;

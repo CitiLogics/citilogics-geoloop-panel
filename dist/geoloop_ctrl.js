@@ -81,8 +81,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         mapCenterLongitude: 0,
         initialZoom: 8,
         userInteractionEnabled: true,
-        animationSpeed: 1, // # of seconds animation time per day of data - has no effect
-        animationPause: 500, // millisecond pause at end of animation loop - has no effect
+        animationSpeed: 1, // # of seconds animation time per day of data
+        animationPause: 500, // millisecond pause at end of animation loop
         hideFeaturesWithNoData: true,
         hideTime: false, // hide the time in the overlay and only display the date
         framesPerSecond: 5,
@@ -117,7 +117,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           showLegend: true,
           legendPosition: 'l',
           opacity: 0.5
-        }
+        },
+        pause: false // for the pause button
       };
 
       GeoLoopCtrl = function (_MetricsPanelCtrl) {
@@ -508,6 +509,11 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           key: 'link',
           value: function link(scope, elem, attrs, ctrl) {
             mapRenderer(scope, elem, attrs, ctrl);
+          }
+        }, {
+          key: 'togglePause',
+          value: function togglePause() {
+            this.panel.pause = !this.panel.pause; // toggle
           }
         }]);
 
