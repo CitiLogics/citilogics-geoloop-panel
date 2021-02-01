@@ -12,6 +12,15 @@ export default class GeoLoop {
     this.frames = []; // list of timestamps
     this.currentFrameIndex = 0;
     this.animation = {};
+    this.pause = false;
+    d3.select('#map_' + this.ctrl.panel.id + '_button').on('click', () => {
+      this.pause = !this.pause;
+      if (this.pause) {
+        this.stopAnimation();
+      } else {
+        this.startAnimation();
+      }
+    });
   }
 
   createMap() {

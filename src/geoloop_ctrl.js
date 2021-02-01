@@ -55,7 +55,6 @@ const panelDefaults = {
     legendPosition: 'l',
     opacity: 0.5
   },
-  pause: false,  // for the pause button
 };
 
 export default class GeoLoopCtrl extends MetricsPanelCtrl {
@@ -404,10 +403,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 /* eslint class-methods-use-this: 0 */
   link(scope, elem, attrs, ctrl) {
     mapRenderer(scope, elem, attrs, ctrl);
-  }
-
-  togglePause() {
-    this.panel.pause = !this.panel.pause;  // toggle
   }
 }
 

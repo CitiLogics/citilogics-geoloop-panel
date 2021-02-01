@@ -117,8 +117,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           showLegend: true,
           legendPosition: 'l',
           opacity: 0.5
-        },
-        pause: false // for the pause button
+        }
       };
 
       GeoLoopCtrl = function (_MetricsPanelCtrl) {
@@ -509,11 +508,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           key: 'link',
           value: function link(scope, elem, attrs, ctrl) {
             mapRenderer(scope, elem, attrs, ctrl);
-          }
-        }, {
-          key: 'togglePause',
-          value: function togglePause() {
-            this.panel.pause = !this.panel.pause; // toggle
           }
         }]);
 
