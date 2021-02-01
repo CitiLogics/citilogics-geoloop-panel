@@ -51,6 +51,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           this.currentFrameIndex = 0;
           this.animation = {};
           this.pause = false;
+          // register button click event
           d3.select('#map_' + this.ctrl.panel.id + '_button').on('click', function () {
             _this.pause = !_this.pause;
             if (_this.pause) {
@@ -58,6 +59,13 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             } else {
               _this.startAnimation();
             }
+          });
+          // register slider input event
+          d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', function () {
+            _this.pause = true;
+            _this.stopAnimation();
+            _this.currentFrameIndex = parseInt(d3.select('#map_' + _this.ctrl.panel.id + '_slider').property('value'), 10);
+            _this.stepFrame();
           });
         }
 
@@ -285,9 +293,6 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           key: 'stepFrame',
           value: function stepFrame() {
             if (!this.map) {
-              return;
-            }
-            if (this.ctrl.panel.pause) {
               return;
             }
             if (this.frames.length === 0) {

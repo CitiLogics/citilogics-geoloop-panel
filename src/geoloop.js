@@ -13,6 +13,7 @@ export default class GeoLoop {
     this.currentFrameIndex = 0;
     this.animation = {};
     this.pause = false;
+    // register button click event
     d3.select('#map_' + this.ctrl.panel.id + '_button').on('click', () => {
       this.pause = !this.pause;
       if (this.pause) {
@@ -20,6 +21,13 @@ export default class GeoLoop {
       } else {
         this.startAnimation();
       }
+    });
+    // register slider input event
+    d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', () => {
+      this.pause = true;
+      this.stopAnimation();
+      this.currentFrameIndex = parseInt(d3.select('#map_' + this.ctrl.panel.id + '_slider').property('value'), 10);
+      this.stepFrame();
     });
   }
 
@@ -231,9 +239,6 @@ export default class GeoLoop {
 
   stepFrame() {
     if (!this.map) {
-      return;
-    }
-    if (this.ctrl.panel.pause) {
       return;
     }
     if (this.frames.length === 0) {
