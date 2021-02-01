@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn', 'app/core/core', 'lodash', './libs/d3', './libs/csscolorparser', './map_renderer', './data_formatter', './css/geoloop-panel.css!'], function (_export, _context) {
+System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn', 'app/core/core', 'lodash', './libs/d3', './map_renderer', './data_formatter', './css/geoloop-panel.css!'], function (_export, _context) {
   "use strict";
 
-  var MetricsPanelCtrl, TimeSeries, kbn, contextSrv, _, d3, csscolorparser, mapRenderer, DataFormatter, _createClass, panelDefaults, GeoLoopCtrl;
+  var MetricsPanelCtrl, TimeSeries, kbn, contextSrv, _, d3, mapRenderer, DataFormatter, _createClass, panelDefaults, GeoLoopCtrl;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -48,8 +48,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
       _ = _lodash.default;
     }, function (_libsD) {
       d3 = _libsD;
-    }, function (_libsCsscolorparser) {
-      csscolorparser = _libsCsscolorparser.default;
     }, function (_map_renderer) {
       mapRenderer = _map_renderer.default;
     }, function (_data_formatter) {
@@ -83,7 +81,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         userInteractionEnabled: true,
         animationSpeed: 1, // # of seconds animation time per day of data
         animationPause: 500, // millisecond pause at end of animation loop
-        hideFeaturesWithNoData: true,
         geoIdTag: 'geo_id',
         geoIdPath: 'id',
         geo: {
@@ -113,8 +110,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           maxValue: 100,
           scaleName: 'viridis', // one of D3's color ramps
           showLegend: true,
-          legendPosition: 'l',
-          opacity: 0.5
+          legendPosition: 'l'
         }
       };
 
@@ -125,8 +121,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _classCallCheck(this, GeoLoopCtrl);
 
           var _this = _possibleConstructorReturn(this, (GeoLoopCtrl.__proto__ || Object.getPrototypeOf(GeoLoopCtrl)).call(this, $scope, $injector));
-
-          console.log('initializing geoloop control');
 
           _this.dataCharacteristics = {};
 
@@ -196,7 +190,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _.defaults(_this.panel, panelDefaults.colorRamp);
           _.defaults(_this.panel, panelDefaults.sizeRamp);
           _.defaults(_this.panel, panelDefaults.geo);
-
           _this.setMapProviderOpts();
 
           _this.dataFormatter = new DataFormatter(_this, kbn);
@@ -206,8 +199,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _this.events.on('panel-teardown', _this.onPanelTeardown.bind(_this));
           _this.events.on('data-snapshot-load', _this.onDataSnapshotLoad.bind(_this));
 
-          console.log('control constructor loading geo:');
-          _this.loadGeo(true);
+          _this.loadGeo();
           _this.lonLatStr = _this.panel.mapCenterLongitude + ',' + _this.panel.mapCenterLatitude;
 
           // $scope.$root.onAppEvent('show-dash-editor', this.doMapResize());
@@ -306,7 +298,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                 jsonpCallback: this.panel.geo.callback,
                 dataType: 'jsonp',
                 success: function success(res) {
-                  console.log('downloaded geojson: ' + res);
+                  console.log('downloaded geojson');
                   _this3.geo = res;
                   _this3.updateGeoDataFeatures();
                   _this3.render();
@@ -379,23 +371,15 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           value: function updateGeoDataFeatures() {
             var _this4 = this;
 
-            console.log('updating geo features');
-            if (!this.geo) {
-              console.log('no geo');
-              return;
-            }
-            if (this.geo.features) {
-              console.log('no geo features');
+            if (!this.geo || !this.geo.features) {
+              console.log('no geo or no features');
               return;
             }
             if (this.map && this.map.map.getSource('geo')) {
-              console.log('geojson source found. removing...');
+              // console.log('geojson source found. removing...');
               this.map.map.removeSource('geo');
             }
-            if (!this.dataCharacteristics || !this.dataCharacteristics.timeValues) {
-              console.log('no data yet...');
-              return;
-            }
+
             // clear timeseries data from geojson data
             this.dataCharacteristics.timeValues.forEach(function (tv) {
               _this4.geo.features.forEach(function (feature) {
@@ -424,7 +408,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             // console.log('keyed series: ', keyedSeries);
 
             // put data into features.
-            var featureIdsWithData = [];
             this.geo.features.forEach(function (feature) {
               if (!feature.properties) {
                 feature.properties = {};
@@ -441,33 +424,14 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                   var val = point[0];
                   feature.properties['f-' + time] = val;
                 });
-                featureIdsWithData.push(featureId);
               }
             });
 
-            var result = this.geo;
-            if (this.panel.hideFeaturesWithNoData) {
-              // Create array of features only containing features with data.
-              var filteredFeatures = this.geo.features.filter(function (feature) {
-                var featureId = _this4.panel.geoIdPath.split('.').reduce(function (obj, key) {
-                  return obj[key];
-                }, feature);
-                return featureIdsWithData.findIndex(function (entry) {
-                  return entry === featureId;
-                }) >= 0;
-              });
-
-              // Create copy of geo object but with the filtered subset of features.
-              result = Object.assign({}, this.geo);
-              result.features = filteredFeatures;
-              console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
-            }
-
-            if (result && this.map) {
+            if (this.geo && this.map) {
               console.log('adding geojson source...');
               this.map.map.addSource('geo', {
                 type: 'geojson',
-                data: result
+                data: this.geo
               });
             } else {
               console.log('not adding source because no map');
@@ -480,9 +444,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
 
             // dc :: data characteristics (dc{timeValues, min, max})
             var dc = this.dataCharacteristics;
-            var colorInterpolator = void 0;
             if (this.panel.colorRamp.codeTo === 'fixed') {
-              colorInterpolator = function colorInterpolator() {
+              this.panel.colorInterpolator = function () {
                 return _this5.panel.colorRamp.fixedValue;
               };
             } else {
@@ -490,15 +453,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               var theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
               // console.log('color ramp name: ', this.panel.colorRamp.scaleName);
               // console.log('color ramp: ', theRamp);
-              colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
+              this.panel.colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
             }
-
-            this.panel.colorInterpolator = function (value) {
-              var scaleColor = colorInterpolator(value);
-              var color = csscolorparser.parseCSSColor(scaleColor);
-              var opacity = _.clamp(_.defaultTo(_this5.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
-              return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + opacity + ')';
-            };
 
             if (this.panel.sizeRamp.codeTo === 'fixed') {
               this.panel.sizeInterpolator = function () {
