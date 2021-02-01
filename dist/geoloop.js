@@ -262,7 +262,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
 
             this.animation = setInterval(function () {
               _this4.stepFrame();
-            }, 200);
+            }, 1000 / this.ctrl.panel.framesPerSecond);
           }
         }, {
           key: 'stopAnimation',

@@ -212,7 +212,7 @@ export default class GeoLoop {
 
     this.animation = setInterval(() => {
       this.stepFrame();
-    }, 200);
+    }, 1000 / this.ctrl.panel.framesPerSecond);
   }
 
   stopAnimation() {

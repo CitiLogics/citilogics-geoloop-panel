@@ -81,10 +81,11 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         mapCenterLongitude: 0,
         initialZoom: 8,
         userInteractionEnabled: true,
-        animationSpeed: 1, // # of seconds animation time per day of data
-        animationPause: 500, // millisecond pause at end of animation loop
+        animationSpeed: 1, // # of seconds animation time per day of data - has no effect
+        animationPause: 500, // millisecond pause at end of animation loop - has no effect
         hideFeaturesWithNoData: true,
         hideTime: false, // hide the time in the overlay and only display the date
+        framesPerSecond: 5,
         geoIdTag: 'geo_id',
         geoIdPath: 'id',
         geo: {
