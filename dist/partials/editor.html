@@ -52,6 +52,8 @@
         </div>
         <gf-form-switch class="gf-form" label="Hide features with no data" label-class="width-17" checked="ctrl.panel.hideFeaturesWithNoData" on-change="ctrl.hardRefresh()">
         </gf-form-switch>
+        <gf-form-switch class="gf-form" label="Hide time in overlay" label-class="width-17" checked="ctrl.panel.hideTime" on-change="ctrl.hardRefresh()">
+        </gf-form-switch>
     </div>
 
     <div class="section gf-form-group" ng-show="ctrl.panel.renderType != 'polygon'">
