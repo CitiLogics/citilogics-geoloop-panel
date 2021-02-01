@@ -15,6 +15,7 @@ export default class GeoLoop {
     this.pause = false;
     // register button click event
     d3.select('#map_' + this.ctrl.panel.id + '_button').on('click', () => {
+      // toggle pause
       this.pause = !this.pause;
       if (this.pause) {
         this.stopAnimation();
@@ -24,8 +25,10 @@ export default class GeoLoop {
     });
     // register slider input event
     d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', () => {
+      // pause
       this.pause = true;
       this.stopAnimation();
+      // set frame to selected date/time
       const targetFrame = parseInt(d3.select('#map_' + this.ctrl.panel.id + '_slider').property('value'), 10);
       this.stepFrame(targetFrame);
     });

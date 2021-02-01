@@ -53,6 +53,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           this.pause = false;
           // register button click event
           d3.select('#map_' + this.ctrl.panel.id + '_button').on('click', function () {
+            // toggle pause
             _this.pause = !_this.pause;
             if (_this.pause) {
               _this.stopAnimation();
@@ -62,8 +63,10 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           });
           // register slider input event
           d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', function () {
+            // pause
             _this.pause = true;
             _this.stopAnimation();
+            // set frame to selected date/time
             var targetFrame = parseInt(d3.select('#map_' + _this.ctrl.panel.id + '_slider').property('value'), 10);
             _this.stepFrame(targetFrame);
           });
