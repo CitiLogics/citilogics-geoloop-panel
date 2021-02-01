@@ -65,7 +65,12 @@ export default class GeoLoop {
 
   clearFrames() {
     this.frames.forEach((item) => {
-      this.map.removeLayer('f-' + item);
+      try {
+        this.map.removeLayer('f-' + item);
+      } catch (e) {
+        // print error, but don't stop
+        console.error(e);
+      }
     });
     this.frames = [];
   }
