@@ -68,9 +68,11 @@
 .map-overlay button {
   background-color: transparent;
   border: none;
+  width: 100%;
 }
 
 .map-overlay button img {
-  width: 30%;
+  width: 2em;
   padding: 0.2em;
+  margin: 0 auto;
 }
