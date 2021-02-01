@@ -64,7 +64,8 @@ export default class GeoLoop {
       return;
     }
 
-    if (this.map.map.isSourceLoaded('geo')) {
+    if (this.map.isSourceLoaded('geo')) {
+      console.log('geo source found on first try. Starting to build frames.');
       this.createFramesSafely();
     } else {
       // console.log('no geo source in map. maybe not loaded?');
@@ -74,8 +75,8 @@ export default class GeoLoop {
       let attemptsLeft = 10;
       const interval = setInterval(() => {
         // console.log('waited for layer to load.');
-        if (this.map.map.isSourceLoaded('geo')) {
-          console.log('geo source found.');
+        if (this.map.isSourceLoaded('geo')) {
+          console.log('geo source found. Starting to build frames.');
           clearInterval(interval);
           this.createFramesSafely();
         } else {
