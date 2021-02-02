@@ -50,7 +50,7 @@ export default class GeoLoop {
       if (this.ctrl.geoResult) {
         console.log('loading cached geo data into mapbox-map');
         try {
-          this.map.addSource(this.ctrl.geoResult);
+          this.map.addSource('geo', this.ctrl.geoResult);
         } catch (e) {
           console.log('add source error: ', e);
         }
