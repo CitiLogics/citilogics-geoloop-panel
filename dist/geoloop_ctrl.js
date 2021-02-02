@@ -290,6 +290,9 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               return;
             }
 
+            // init map
+            this.render();
+
             if (this.panel.snapshotLocationData) {
               console.log('Found snapshop location data. Loading geo data from there...');
               this.geo = this.panel.snapshotLocationData;
