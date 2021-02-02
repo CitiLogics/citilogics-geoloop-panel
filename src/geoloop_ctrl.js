@@ -365,7 +365,8 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
 
     // make sure there is a map
     if (!this.map) {
-      this.createMap();
+      // this.createMap();
+      this.render();
     }
 
     if (result) {
