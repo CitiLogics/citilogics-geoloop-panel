@@ -363,8 +363,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
     }
 
-    console.log(result);
-
     if (result) {
       if (this.map) {
         console.log('adding geojson source...');

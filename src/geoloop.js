@@ -121,11 +121,11 @@ export default class GeoLoop {
           console.log('map was unloaded while waiting for geo source');
           clearInterval(interval);
         } else if (this.map.isSourceLoaded('geo')) {
-          console.log('geo source found. Starting to build frames.');
+          console.log('geo source found. Starting to build frames');
           clearInterval(interval);
           this.createFramesSafely();
         } else {
-          console.log('still no geo source. try refresh manually?');
+          console.log('still no geo source. try to refresh manually?');
           attemptsLeft -= 1;
           if (attemptsLeft <= 0) {
             clearInterval(interval);
