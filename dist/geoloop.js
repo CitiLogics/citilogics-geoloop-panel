@@ -151,7 +151,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               // this is stupid to use setInterval.
               // but mapbox doesn't seem to have a on-source-loaded event that reliably works
               // for this purpose.
-              var attemptsLeft = 10;
+              var attemptsLeft = 1;
               var interval = setInterval(function () {
                 if (!_this3.map) {
                   console.log('map was unloaded while waiting for geo source');
@@ -165,6 +165,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                   attemptsLeft -= 1;
                   if (attemptsLeft <= 0) {
                     clearInterval(interval);
+                    _this3.ctrl.loadGeo();
                   }
                 }
               }, 1000);
