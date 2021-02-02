@@ -88,7 +88,11 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             // load geo data if there already is some
             if (this.ctrl.geoResult) {
               console.log('loading cached geo data into mapbox-map');
-              this.map.addSource(this.ctrl.geoResult);
+              try {
+                this.map.addSource(this.ctrl.geoResult);
+              } catch (e) {
+                console.log('add source error: ', e);
+              }
               this.ctrl.geoResult = null; // remove already used data
             }
           }
