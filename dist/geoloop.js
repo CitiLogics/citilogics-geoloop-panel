@@ -106,7 +106,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'drawLayerFrames',
           value: function drawLayerFrames() {
-            console.log('drawing layber frames');
+            console.log('drawing layer frames');
             var data = this.ctrl.data;
             if (this.needToRedrawFrames(data)) {
               this.stopAnimation();

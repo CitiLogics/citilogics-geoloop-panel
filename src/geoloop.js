@@ -63,7 +63,7 @@ export default class GeoLoop {
   }
 
   drawLayerFrames() {
-    console.log('drawing layber frames');
+    console.log('drawing layer frames');
     const data = this.ctrl.data;
     if (this.needToRedrawFrames(data)) {
       this.stopAnimation();
