@@ -102,7 +102,7 @@ export default class GeoLoop {
       // this is stupid to use setInterval.
       // but mapbox doesn't seem to have a on-source-loaded event that reliably works
       // for this purpose.
-      let attemptsLeft = 10;
+      let attemptsLeft = 1;
       const interval = setInterval(() => {
         if (!this.map) {
           console.log('map was unloaded while waiting for geo source');
@@ -115,6 +115,7 @@ export default class GeoLoop {
           console.log('still no geo source. try refresh manually?');
           attemptsLeft -= 1;
           if (attemptsLeft <= 0) {
+            this.ctrl.loadGeo(true)
             clearInterval(interval);
           }
         }

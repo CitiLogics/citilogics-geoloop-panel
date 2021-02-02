@@ -208,10 +208,10 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    // if (this.panel.snapshotLocationData) {
-    //   this.geo = this.panel.snapshotLocationData;
-    //   return;
-    // }
+    if (this.panel.snapshotLocationData) {
+      this.geo = this.panel.snapshotLocationData;
+      return;
+    }
 
     if (this.panel.geo.location === 'url') {
       if (!this.panel.geo.contents) {
