@@ -92,7 +92,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               if (_this2.ctrl.geoResult) {
                 console.log('loading cached geo data into mapbox-map');
                 try {
-                  _this2.map.addSource(_this2.ctrl.geoResult);
+                  _this2.map.addSource('geo', _this2.ctrl.geoResult);
                 } catch (e) {
                   console.log('add source error: ', e);
                 }
