@@ -290,10 +290,10 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               return;
             }
 
-            // if (this.panel.snapshotLocationData) {
-            //   this.geo = this.panel.snapshotLocationData;
-            //   return;
-            // }
+            if (this.panel.snapshotLocationData) {
+              this.geo = this.panel.snapshotLocationData;
+              return;
+            }
 
             if (this.panel.geo.location === 'url') {
               if (!this.panel.geo.contents) {

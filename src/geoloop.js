@@ -115,7 +115,7 @@ export default class GeoLoop {
           console.log('still no geo source. try refresh manually?');
           attemptsLeft -= 1;
           if (attemptsLeft <= 0) {
-            this.ctrl.loadGeo(true)
+            this.ctrl.loadGeo(true);
             clearInterval(interval);
           }
         }
