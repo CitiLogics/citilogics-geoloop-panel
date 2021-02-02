@@ -17,7 +17,10 @@ export default function link(scope, elem, attrs, ctrl) {
   function render() {
     console.log('called into RENDER');
     if (!ctrl.map) {
-      createMap();
+      console.log('creating new map (new GeoLoop(...))');
+      const newmap = new GeoLoop(ctrl, mapContainer[0]);
+      ctrl.map = ctrl.map || newmap;  // only update map if there is still nothing (this is as atomic as it gets - small race condition)
+      if (ctrl.map !== newmap) newmap.remove();  // unload new map, if there was one create before
     }
 
     ctrl.map.resize();
@@ -30,13 +33,5 @@ export default function link(scope, elem, attrs, ctrl) {
     ctrl.updateRamp();
     // create frames on map and start the animation
     ctrl.map.drawLayerFrames();
-  }
-
-  function createMap() {
-    // create map if none exists
-    console.log('creating new map (new GeoLoop(...))');
-    const newmap = new GeoLoop(ctrl, mapContainer[0]);
-    ctrl.map = ctrl.map || newmap;  // only update map if there is still nothing (this is as atomic as it gets - small race condition)
-    if (ctrl.map !== newmap) newmap.remove();  // unload new map, if there was one create before
   }
 }

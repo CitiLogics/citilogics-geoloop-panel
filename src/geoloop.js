@@ -45,6 +45,10 @@ export default class GeoLoop {
       zoom: parseFloat(this.ctrl.panel.initialZoom),
       interactive: this.ctrl.panel.userInteractionEnabled
     });
+    // load geo data if there already is some
+    if (this.ctrl.geoResult) {
+      this.map.addSource(this.ctrl.geoResult);
+    }
   }
 
   createLegend() {

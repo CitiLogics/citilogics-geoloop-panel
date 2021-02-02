@@ -85,6 +85,10 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               zoom: parseFloat(this.ctrl.panel.initialZoom),
               interactive: this.ctrl.panel.userInteractionEnabled
             });
+            // load geo data if there already is some
+            if (this.ctrl.geoResult) {
+              this.map.addSource(this.ctrl.geoResult);
+            }
           }
         }, {
           key: 'createLegend',

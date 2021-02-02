@@ -363,12 +363,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
     }
 
-    // make sure there is a map
-    if (!this.map) {
-      // this.createMap();
-      this.render();
-    }
-
     if (result) {
       if (this.map) {
         console.log('adding geojson source...');
@@ -377,7 +371,11 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
           data: result
         });
       } else {
-        console.log('not adding source because no map');
+        console.log('caching geojson source, because map is not loaded yet.');
+        this.geoResult = {
+          type: 'geojson',
+          data: result
+        };
       }
     } else {
       console.log('not adding source because no result/geo');
