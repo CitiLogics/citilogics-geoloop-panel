@@ -47,7 +47,9 @@ export default class GeoLoop {
     });
     // load geo data if there already is some
     if (this.ctrl.geoResult) {
+      console.log('loading cached geo data into mapbox-map');
       this.map.addSource(this.ctrl.geoResult);
+      this.ctrl.geoResult = null;  // remove already used data
     }
   }
 
@@ -61,6 +63,7 @@ export default class GeoLoop {
   }
 
   drawLayerFrames() {
+    console.log('drawing layber frames');
     const data = this.ctrl.data;
     if (this.needToRedrawFrames(data)) {
       this.stopAnimation();

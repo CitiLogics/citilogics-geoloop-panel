@@ -468,7 +468,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                   data: result
                 });
               } else {
-                console.log('caching geojson source, because map is not loaded yet.');
+                console.log('caching geojson source, because map is not loaded yet');
                 this.geoResult = {
                   type: 'geojson',
                   data: result

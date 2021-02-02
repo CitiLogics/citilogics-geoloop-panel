@@ -371,7 +371,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
           data: result
         });
       } else {
-        console.log('caching geojson source, because map is not loaded yet.');
+        console.log('caching geojson source, because map is not loaded yet');
         this.geoResult = {
           type: 'geojson',
           data: result

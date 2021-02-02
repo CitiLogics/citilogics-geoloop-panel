@@ -87,7 +87,9 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             });
             // load geo data if there already is some
             if (this.ctrl.geoResult) {
+              console.log('loading cached geo data into mapbox-map');
               this.map.addSource(this.ctrl.geoResult);
+              this.ctrl.geoResult = null; // remove already used data
             }
           }
         }, {
@@ -104,6 +106,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'drawLayerFrames',
           value: function drawLayerFrames() {
+            console.log('drawing layber frames');
             var data = this.ctrl.data;
             if (this.needToRedrawFrames(data)) {
               this.stopAnimation();
