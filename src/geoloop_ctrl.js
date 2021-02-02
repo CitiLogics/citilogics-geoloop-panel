@@ -371,11 +371,11 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
           data: result
         });
       } else {
-        console.log('caching geojson source, because map is not loaded yet');
-        this.geoResult = {
-          type: 'geojson',
-          data: result
-        };
+        // console.log('caching geojson source, because map is not loaded yet');
+        // this.geoResult = {
+        //   type: 'geojson',
+        //   data: result
+        // };
       }
     } else {
       console.log('not adding source because no result/geo');
