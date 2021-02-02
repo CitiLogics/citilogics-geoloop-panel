@@ -350,6 +350,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'remove',
           value: function remove() {
+            this.stopAnimation();
+            // this.clearFrames();  // this is probably not necessary
             if (this.map) {
               this.map.remove();
             }

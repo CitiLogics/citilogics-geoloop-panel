@@ -290,6 +290,8 @@ export default class GeoLoop {
   }
 
   remove() {
+    this.stopAnimation();
+    // this.clearFrames();  // this is probably not necessary
     if (this.map) {
       this.map.remove();
     }

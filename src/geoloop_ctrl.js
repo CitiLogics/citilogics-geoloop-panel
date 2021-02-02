@@ -251,7 +251,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   onDataReceived(dataList) {
-    // console.log('ctrl recieved data: ', dataList);
+    console.log('ctrl recieved data: ', dataList);
     if (!dataList) return;
 
     if (this.dashboard.snapshot && this.geo) {
@@ -362,14 +362,18 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
     }
 
-    if (result && this.map) {
-      console.log('adding geojson source...');
-      this.map.map.addSource('geo', {
-        type: 'geojson',
-        data: result
-      });
+    if (result) {
+      if (this.map) {
+        console.log('adding geojson source...');
+        this.map.map.addSource('geo', {
+          type: 'geojson',
+          data: result
+        });
+      } else {
+        console.log('not adding source because no map');
+      }
     } else {
-      console.log('not adding source because no map');
+      console.log('not adding source because no result/geo');
     }
   }
 
