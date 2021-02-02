@@ -46,15 +46,17 @@ export default class GeoLoop {
       interactive: this.ctrl.panel.userInteractionEnabled
     });
     // load geo data if there already is some
-    if (this.ctrl.geoResult) {
-      console.log('loading cached geo data into mapbox-map');
-      try {
-        this.map.addSource(this.ctrl.geoResult);
-      } catch (e) {
-        console.log('add source error: ', e);
+    this.map.on('load', () => {
+      if (this.ctrl.geoResult) {
+        console.log('loading cached geo data into mapbox-map');
+        try {
+          this.map.addSource(this.ctrl.geoResult);
+        } catch (e) {
+          console.log('add source error: ', e);
+        }
+        this.ctrl.geoResult = null;  // remove already used data
       }
-      this.ctrl.geoResult = null;  // remove already used data
-    }
+    });
   }
 
   createLegend() {
