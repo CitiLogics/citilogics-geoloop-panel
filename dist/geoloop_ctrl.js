@@ -286,12 +286,10 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           value: function loadGeo(reload) {
             var _this3 = this;
 
-            if (this.map && !reload) {
+            if (this.geo && !reload) {
+              // already loaded
               return;
             }
-
-            // init map
-            this.render();
 
             if (this.panel.snapshotLocationData) {
               console.log('Found snapshop location data. Loading geo data from there...');
@@ -460,6 +458,11 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               result = Object.assign({}, this.geo);
               result.features = filteredFeatures;
               console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
+            }
+
+            // make sure there is a map
+            if (!this.map) {
+              this.createMap();
             }
 
             if (result) {

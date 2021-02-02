@@ -75,7 +75,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         _createClass(GeoLoop, [{
           key: 'createMap',
           value: function createMap() {
-            console.log('rebuilding map');
+            console.log('creating mapbox-map');
             var mapCenterLonLat = [parseFloat(this.ctrl.panel.mapCenterLongitude), parseFloat(this.ctrl.panel.mapCenterLatitude)];
             mapboxgl.accessToken = this.ctrl.panel.mbApiKey;
             this.map = new mapboxgl.Map({
@@ -129,17 +129,17 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             var _this3 = this;
 
             if (!this.ctrl.dataCharacteristics.timeValues) {
-              console.log('no series to display');
+              console.log('no series to display (while trying to create frames)');
               return;
             }
 
             if (!this.ctrl.geo) {
-              console.log('no geo data');
+              console.log('no geo data (while trying to create frames)');
               return;
             }
 
             if (!this.map) {
-              console.log('no map found');
+              console.log('no map found (while trying to create frames)');
               return;
             }
 

@@ -21,8 +21,7 @@ System.register(['./geoloop'], function (_export, _context) {
     function render() {
       console.log('called into RENDER');
       if (!ctrl.map) {
-        console.log('creating new map (new GeoLoop(...))');
-        ctrl.map = ctrl.map || new GeoLoop(ctrl, mapContainer[0]); // only update map if there is still nothing
+        createMap();
       }
 
       ctrl.map.resize();
@@ -31,8 +30,18 @@ System.register(['./geoloop'], function (_export, _context) {
 
       if (!ctrl.map.legend && ctrl.panel.showLegend) ctrl.map.createLegend();
 
+      // initialize color ramp/interpolation
       ctrl.updateRamp();
+      // create frames on map and start the animation
       ctrl.map.drawLayerFrames();
+    }
+
+    function createMap() {
+      // create map if none exists
+      console.log('creating new map (new GeoLoop(...))');
+      var newmap = new GeoLoop(ctrl, mapContainer[0]);
+      ctrl.map = ctrl.map || newmap; // only update map if there is still nothing (this is as atomic as it gets - small race condition)
+      if (ctrl.map !== newmap) newmap.remove(); // unload new map, if there was one create before
     }
   }
 

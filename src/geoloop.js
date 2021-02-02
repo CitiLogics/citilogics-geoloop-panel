@@ -35,7 +35,7 @@ export default class GeoLoop {
   }
 
   createMap() {
-    console.log('rebuilding map');
+    console.log('creating mapbox-map');
     const mapCenterLonLat = [parseFloat(this.ctrl.panel.mapCenterLongitude), parseFloat(this.ctrl.panel.mapCenterLatitude)];
     mapboxgl.accessToken = this.ctrl.panel.mbApiKey;
     this.map = new mapboxgl.Map({
@@ -80,17 +80,17 @@ export default class GeoLoop {
 
   createFrames() {
     if (!this.ctrl.dataCharacteristics.timeValues) {
-      console.log('no series to display');
+      console.log('no series to display (while trying to create frames)');
       return;
     }
 
     if (!this.ctrl.geo) {
-      console.log('no geo data');
+      console.log('no geo data (while trying to create frames)');
       return;
     }
 
     if (!this.map) {
-      console.log('no map found');
+      console.log('no map found (while trying to create frames)');
       return;
     }
 

@@ -204,12 +204,10 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   loadGeo(reload) {
-    if (this.map && !reload) {
+    if (this.geo && !reload) {
+      // already loaded
       return;
     }
-
-    // init map
-    this.render();
 
     if (this.panel.snapshotLocationData) {
       console.log('Found snapshop location data. Loading geo data from there...');
@@ -363,6 +361,11 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       result = Object.assign({}, this.geo);
       result.features = filteredFeatures;
       console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
+    }
+
+    // make sure there is a map
+    if (!this.map) {
+      this.createMap();
     }
 
     if (result) {
