@@ -208,6 +208,9 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       return;
     }
 
+    // init map
+    this.render();
+
     if (this.panel.snapshotLocationData) {
       console.log('Found snapshop location data. Loading geo data from there...');
       this.geo = this.panel.snapshotLocationData;
