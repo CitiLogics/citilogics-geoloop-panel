@@ -291,6 +291,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             }
 
             if (this.panel.snapshotLocationData) {
+              console.log('Found snapshop location data. Loading geo data from there...');
               this.geo = this.panel.snapshotLocationData;
               return;
             }
@@ -299,6 +300,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               if (!this.panel.geo.contents) {
                 return;
               }
+              console.log('Trying to load geo data from url: ', this.panel.geo.contents);
               window.$.ajax({
                 type: 'GET',
                 url: this.panel.geo.contents + '?callback=?',
@@ -338,6 +340,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             if (!dataList) return;
 
             if (this.dashboard.snapshot && this.geo) {
+              console.log('Saving geo data to snapshot...');
               this.panel.snapshotLocationData = this.geo;
             }
 
@@ -379,12 +382,13 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           value: function updateGeoDataFeatures() {
             var _this4 = this;
 
+            console.log('updating geo data features...');
             if (!this.geo || !this.geo.features) {
               console.log('no geo or no features');
               return;
             }
             if (this.map && this.map.map.getSource('geo')) {
-              // console.log('geojson source found. removing...');
+              console.log('geojson source found. removing...');
               this.map.map.removeSource('geo');
             }
 

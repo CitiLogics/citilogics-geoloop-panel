@@ -209,6 +209,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     }
 
     if (this.panel.snapshotLocationData) {
+      console.log('Found snapshop location data. Loading geo data from there...');
       this.geo = this.panel.snapshotLocationData;
       return;
     }
@@ -217,6 +218,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       if (!this.panel.geo.contents) {
         return;
       }
+      console.log('Trying to load geo data from url: ', this.panel.geo.contents);
       window.$.ajax({
         type: 'GET',
         url: this.panel.geo.contents + '?callback=?',
@@ -253,6 +255,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     if (!dataList) return;
 
     if (this.dashboard.snapshot && this.geo) {
+      console.log('Saving geo data to snapshot...');
       this.panel.snapshotLocationData = this.geo;
     }
 
@@ -287,12 +290,13 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   updateGeoDataFeatures() {
+    console.log('updating geo data features...');
     if (!this.geo || !this.geo.features) {
       console.log('no geo or no features');
       return;
     }
     if (this.map && this.map.map.getSource('geo')) {
-      // console.log('geojson source found. removing...');
+      console.log('geojson source found. removing...');
       this.map.map.removeSource('geo');
     }
 
