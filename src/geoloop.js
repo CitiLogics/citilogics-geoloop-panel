@@ -126,22 +126,16 @@ export default class GeoLoop {
         if (!this.map) {
           console.log('map was unloaded while waiting for geo source');
           clearInterval(interval);
+        } else if (this.map.isSourceLoaded('geo')) {
+          console.log('geo source found. Starting to build frames');
+          clearInterval(interval);
+          this.createFramesSafely();
         } else {
-          let sourceLoaded = false;
-          try {
-            sourceLoaded = this.map.isSourceLoaded('geo');
-          } catch (e) { /* error handling below */ }
-          if (sourceLoaded) {
-            console.log('geo source found. Starting to build frames');
+          console.log('no geo source found. Trying again...');
+          attemptsLeft -= 1;
+          if (attemptsLeft <= 0) {
             clearInterval(interval);
-            this.createFramesSafely();
-          } else {
-            console.log('no geo source found. Trying again...');
-            attemptsLeft -= 1;
-            if (attemptsLeft <= 0) {
-              clearInterval(interval);
-              console.error('Failed to load geo source. Try to refresh manually?');
-            }
+            console.error('Failed to load geo source. Try to refresh manually?');
           }
         }
       }, 1000);

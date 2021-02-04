@@ -177,22 +177,16 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                 if (!_this4.map) {
                   console.log('map was unloaded while waiting for geo source');
                   clearInterval(interval);
+                } else if (_this4.map.isSourceLoaded('geo')) {
+                  console.log('geo source found. Starting to build frames');
+                  clearInterval(interval);
+                  _this4.createFramesSafely();
                 } else {
-                  var sourceLoaded = false;
-                  try {
-                    sourceLoaded = _this4.map.isSourceLoaded('geo');
-                  } catch (e) {/* error handling below */}
-                  if (sourceLoaded) {
-                    console.log('geo source found. Starting to build frames');
+                  console.log('no geo source found. Trying again...');
+                  attemptsLeft -= 1;
+                  if (attemptsLeft <= 0) {
                     clearInterval(interval);
-                    _this4.createFramesSafely();
-                  } else {
-                    console.log('no geo source found. Trying again...');
-                    attemptsLeft -= 1;
-                    if (attemptsLeft <= 0) {
-                      clearInterval(interval);
-                      console.error('Failed to load geo source. Try to refresh manually?');
-                    }
+                    console.error('Failed to load geo source. Try to refresh manually?');
                   }
                 }
               }, 1000);
