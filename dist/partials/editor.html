@@ -121,5 +121,8 @@
             <label class="gf-form-label width-10">Opacity</label>
             <input type="number" min="0" max="1" step="0.1" class="input-small gf-form-input width-10" ng-model="ctrl.panel.colorRamp.opacity" ng-change="ctrl.render()" placeholder="0.5" ng-model-onblur />
         </div>
+        <div class="gf-form">
+            <gf-form-switch class="gf-form" label="Show Legend" label-class="width-10" checked="ctrl.panel.colorRamp.showLegend" on-change="ctrl.render()"></gf-form-switch>
+        </div>
     </div>
 </div>
