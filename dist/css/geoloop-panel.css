@@ -44,6 +44,10 @@
   background: linear-gradient(to right, #000, #fff);
 }
 
+.map-overlay .legend .legend_text {
+  text-align: center;
+}
+
 .map-overlay input {
   background-color: transparent;
   display: inline-block;
