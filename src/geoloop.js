@@ -33,8 +33,8 @@ export default class GeoLoop {
       this.stepFrame(targetFrame);
     });
     // colorbar
-    d3.select('#map_' + this.ctrl.panel.id + '_slider bar').attr('background', 'linear-gradient(to right, ' + this.ctrl.theRamp(0) + ', ' + this.ctrl.theRamp(1) + ')');
-    d3.select('#map_' + this.ctrl.panel.id + '_slider bar.legend_text').html(this.ctrl.inputRange);
+    d3.select('#map_' + this.ctrl.panel.id + '_legend.bar').attr('background', 'linear-gradient(to right, ' + this.ctrl.theRamp(0) + ', ' + this.ctrl.theRamp(1) + ')');
+    d3.select('#map_' + this.ctrl.panel.id + '_legend.legend_text').html(this.ctrl.inputRange);
   }
 
   createMap() {
