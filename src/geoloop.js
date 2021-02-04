@@ -127,9 +127,10 @@ export default class GeoLoop {
           console.log('map was unloaded while waiting for geo source');
           clearInterval(interval);
         } else {
+          let sourceLoaded = false;
           try {
-            const sourceLoaded = this.map.isSourceLoaded('geo');
-          } catch (e) {}
+            sourceLoaded = this.map.isSourceLoaded('geo');
+          } catch (e) { /* error handling below */ }
           if (sourceLoaded) {
             console.log('geo source found. Starting to build frames');
             clearInterval(interval);
