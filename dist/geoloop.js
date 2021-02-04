@@ -172,11 +172,11 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                   console.log('map was unloaded while waiting for geo source');
                   clearInterval(interval);
                 } else if (_this4.map.isSourceLoaded('geo')) {
-                  console.log('geo source found. Starting to build frames.');
+                  console.log('geo source found. Starting to build frames');
                   clearInterval(interval);
                   _this4.createFramesSafely();
                 } else {
-                  console.log('still no geo source. try refresh manually?');
+                  console.log('still no geo source. try to refresh manually?');
                   attemptsLeft -= 1;
                   if (attemptsLeft <= 0) {
                     clearInterval(interval);
