@@ -32,8 +32,6 @@ export default class GeoLoop {
       const targetFrame = parseInt(d3.select('#map_' + this.ctrl.panel.id + '_slider').property('value'), 10);
       this.stepFrame(targetFrame);
     });
-    // setup colorbar legend
-    d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').style('background', 'linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
   }
 
   createMap() {
@@ -247,8 +245,9 @@ export default class GeoLoop {
     d3.select('#map_' + this.ctrl.panel.id + '_slider')
       .attr('min', 0)
       .attr('max', this.frames.length);
-    // update colorbar text
+    // update colorbar legend and text
     d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.legend_text').html(this.ctrl.inputRange.map(Math.round).join(' - '));
+    d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').style('background', 'linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
   }
 
 
