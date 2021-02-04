@@ -462,12 +462,14 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
 
             if (result) {
               if (this.map) {
+                // load results into map
                 console.log('adding geojson source...');
                 this.map.map.addSource('geo', {
                   type: 'geojson',
                   data: result
                 });
               } else {
+                // save results for when the map loads
                 console.log('caching geojson source, because map is not loaded yet');
                 this.geoResult = {
                   type: 'geojson',

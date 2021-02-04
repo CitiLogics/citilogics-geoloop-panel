@@ -13,7 +13,7 @@ export default class GeoLoop {
     this.currentFrameIndex = 0;
     this.animation = {};
     this.pause = false;
-    // register button click event
+    // register overlay button click event
     d3.select('#map_' + this.ctrl.panel.id + '_button').on('click', () => {
       // toggle pause
       this.pause = !this.pause;
@@ -23,7 +23,7 @@ export default class GeoLoop {
         this.startAnimation();
       }
     });
-    // register slider input event
+    // register overlay slider input event
     d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', () => {
       // pause
       this.pause = true;
@@ -32,7 +32,7 @@ export default class GeoLoop {
       const targetFrame = parseInt(d3.select('#map_' + this.ctrl.panel.id + '_slider').property('value'), 10);
       this.stepFrame(targetFrame);
     });
-    // colorbar
+    // setup colorbar legend
     d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').style('background', 'linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
   }
 
@@ -47,16 +47,16 @@ export default class GeoLoop {
       zoom: parseFloat(this.ctrl.panel.initialZoom),
       interactive: this.ctrl.panel.userInteractionEnabled
     });
-    // load geo data if there already is some
+    // load geo data if there already is some (created by ctrl.updateGeoDataFeatures)
     this.map.on('load', () => {
       if (this.ctrl.geoResult) {
         console.log('loading cached geo data into mapbox-map');
         try {
           this.map.addSource('geo', this.ctrl.geoResult);
         } catch (e) {
+          // don't panic on error, just print it
           console.log('add source error: ', e);
         }
-        this.ctrl.geoResult = null;  // remove already used data
       }
     });
   }
@@ -82,14 +82,18 @@ export default class GeoLoop {
   }
 
   clearFrames() {
+    let errors = 0;
     this.frames.forEach((item) => {
       try {
         this.map.removeLayer('f-' + item);
       } catch (e) {
-        // print error, but don't stop
-        console.error(e);
+        // don't stop on error
+        errors += 1;
       }
     });
+    if (errors) {
+      console.error('failed to remove' + errors + 'layers from mapbox-map');
+    }
     this.frames = [];
   }
 
@@ -252,6 +256,7 @@ export default class GeoLoop {
       this.stopAnimation();
     }
 
+    // start the animation with the specified fps
     this.animation = setInterval(() => {
       this.stepFrame();
     }, 1000 / this.ctrl.panel.framesPerSecond);
@@ -308,7 +313,7 @@ export default class GeoLoop {
 
   remove() {
     this.stopAnimation();
-    // this.clearFrames();  // this is probably not necessary
+    this.clearFrames();
     if (this.map) {
       this.map.remove();
     }
