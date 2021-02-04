@@ -34,8 +34,8 @@ export default class GeoLoop {
     });
     // colorbar
     // d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').attr('background', 'linear-gradient(to right, ' + this.ctrl.theRamp(0) + ', ' + this.ctrl.theRamp(1) + ')');
-    d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').background('linear-gradient(to right, ' + [...Array(11).keys()].map(x => this.ctrl.theRamp(x / 10)).join(', ') + ')');
-    console.log('linear-gradient(to right, ' + [...Array(11).keys()].map(x => this.ctrl.theRamp(x / 10)).join(', ') + ')');
+    d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').background('linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
+    console.log('linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
   }
 
   createMap() {

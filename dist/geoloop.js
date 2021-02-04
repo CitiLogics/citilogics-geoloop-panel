@@ -5,18 +5,6 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
 
   var moment, mapboxgl, d3, _createClass, GeoLoop;
 
-  function _toConsumableArray(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-        arr2[i] = arr[i];
-      }
-
-      return arr2;
-    } else {
-      return Array.from(arr);
-    }
-  }
-
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -84,12 +72,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           });
           // colorbar
           // d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').attr('background', 'linear-gradient(to right, ' + this.ctrl.theRamp(0) + ', ' + this.ctrl.theRamp(1) + ')');
-          d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').background('linear-gradient(to right, ' + [].concat(_toConsumableArray(Array(11).keys())).map(function (x) {
-            return _this.ctrl.theRamp(x / 10);
-          }).join(', ') + ')');
-          console.log('linear-gradient(to right, ' + [].concat(_toConsumableArray(Array(11).keys())).map(function (x) {
-            return _this.ctrl.theRamp(x / 10);
-          }).join(', ') + ')');
+          d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').background('linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
+          console.log('linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
         }
 
         _createClass(GeoLoop, [{
