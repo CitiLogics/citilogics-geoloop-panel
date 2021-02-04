@@ -7,7 +7,7 @@
         <button id="map_{{ctrl.panel.id}}_button"><img src="/public/plugins/citilogics-geoloop-panel/images/pauseplay.svg"/></button>
     </div>
 
-    <div class='map-overlay-inner'>
+    <div class='map-overlay-inner' style="display:{{ctrl.panel.colorRamp.showLegend ? 'inherit' : 'none'}};">
         <div id='map_{{ctrl.panel.id}}_legend' class='legend'>
             <div class='bar'></div>
             <div class="legend_text"></div>
