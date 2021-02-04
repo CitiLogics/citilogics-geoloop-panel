@@ -71,9 +71,11 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             _this.stepFrame(targetFrame);
           });
           // colorbar
+          var barColors = this.ctrl.thrRamp(0) + ', ' + this.ctrl.thrRamp(0.1) + ', ' + this.ctrl.thrRamp(0.2) + ', ' + this.ctrl.thrRamp(0.3) + ', ' + this.ctrl.thrRamp(0.4) + ', ' + this.ctrl.thrRamp(0.5) + ', ' + this.ctrl.thrRamp(0.6) + ', ' + this.ctrl.thrRamp(0.7) + ', ' + this.ctrl.thrRamp(0.8) + ', ' + this.ctrl.thrRamp(0.9) + ', ' + this.ctrl.thrRamp(1);
+          d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').attr('background', 'linear-gradient(to right, ' + barColors + ')');
+          console.log('background', 'linear-gradient(to right, ' + barColors + ')');
           // d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').attr('background', 'linear-gradient(to right, ' + this.ctrl.theRamp(0) + ', ' + this.ctrl.theRamp(1) + ')');
           // d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').background('linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
-          // console.log('linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
         }
 
         _createClass(GeoLoop, [{
