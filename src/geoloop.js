@@ -32,6 +32,9 @@ export default class GeoLoop {
       const targetFrame = parseInt(d3.select('#map_' + this.ctrl.panel.id + '_slider').property('value'), 10);
       this.stepFrame(targetFrame);
     });
+    // colorbar
+    d3.select('#map_' + this.ctrl.panel.id + '_slider bar').attr('background', 'linear-gradient(to right, ' + this.ctrl.theRamp(0) + ', ' + this.ctrl.theRamp(1) + ')');
+    d3.select('#map_' + this.ctrl.panel.id + '_slider bar.legend_text').html(this.ctrl.inputRange);
   }
 
   createMap() {

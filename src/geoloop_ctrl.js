@@ -389,11 +389,11 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     if (this.panel.colorRamp.codeTo === 'fixed') {
       colorInterpolator = () => this.panel.colorRamp.fixedValue;
     } else {
-      const inputRange = this.panel.colorRamp.auto ? [dc.min, dc.max] : [this.panel.colorRamp.minValue, this.panel.colorRamp.maxValue];
-      const theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
+      this.inputRange = this.panel.colorRamp.auto ? [dc.min, dc.max] : [this.panel.colorRamp.minValue, this.panel.colorRamp.maxValue];
+      this.theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
       // console.log('color ramp name: ', this.panel.colorRamp.scaleName);
       // console.log('color ramp: ', theRamp);
-      colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
+      colorInterpolator = d3.scaleSequential().domain(this.inputRange).interpolator(this.theRamp);
     }
 
     this.panel.colorInterpolator = (value) => {
