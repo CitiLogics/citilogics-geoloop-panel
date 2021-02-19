@@ -14,7 +14,7 @@ export default class GeoLoop {
     this.animation = {};
     this.pause = false;
     // register overlay button click event
-    d3.select('#map_' + this.ctrl.panel.id + '_button').on('click', () => {
+    d3.select('#map_' + this.ctrl.panel.id + '_button_pause').on('click', () => {
       // toggle pause
       this.pause = !this.pause;
       if (this.pause) {
@@ -22,6 +22,16 @@ export default class GeoLoop {
       } else {
         this.startAnimation();
       }
+    });
+    d3.select('#map_' + this.ctrl.panel.id + '_button_backward').on('click', () => {
+      // go one frame backward
+      this.pause = true;
+      this.stepFrame((this.currentFrameIndex+this.frames.length-1) % this.frames.length);
+    });
+    d3.select('#map_' + this.ctrl.panel.id + '_button_forward').on('click', () => {
+      // go one frame forward
+      this.pause = true;
+      this.stepFrame((this.currentFrameIndex+1) % this.frames.length);
     });
     // register overlay slider input event
     d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', () => {
