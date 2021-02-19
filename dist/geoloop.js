@@ -52,7 +52,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           this.animation = {};
           this.pause = false;
           // register overlay button click event
-          d3.select('#map_' + this.ctrl.panel.id + '_button').on('click', function () {
+          d3.select('#map_' + this.ctrl.panel.id + '_button_pause').on('click', function () {
             // toggle pause
             _this.pause = !_this.pause;
             if (_this.pause) {
@@ -60,6 +60,16 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             } else {
               _this.startAnimation();
             }
+          });
+          d3.select('#map_' + this.ctrl.panel.id + '_button_backward').on('click', function () {
+            // go one frame backward
+            _this.pause = true;
+            _this.stepFrame((_this.currentFrameIndex + _this.frames.length - 1) % _this.frames.length);
+          });
+          d3.select('#map_' + this.ctrl.panel.id + '_button_forward').on('click', function () {
+            // go one frame forward
+            _this.pause = true;
+            _this.stepFrame((_this.currentFrameIndex + 1) % _this.frames.length);
           });
           // register overlay slider input event
           d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', function () {
