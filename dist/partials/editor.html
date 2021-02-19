@@ -50,6 +50,14 @@
                 <select class="input-small gf-form-input" ng-model="ctrl.panel.renderType" ng-options="s for (s,u) in ctrl.opts.featureTypes" ng-change="ctrl.render()"></select>
             </div>
         </div>
+        <gf-form-switch class="gf-form" label="Hide features with no data" label-class="width-17" checked="ctrl.panel.hideFeaturesWithNoData" on-change="ctrl.hardRefresh()">
+        </gf-form-switch>
+        <gf-form-switch class="gf-form" label="Hide time in overlay" label-class="width-17" checked="ctrl.panel.hideTime" on-change="ctrl.render()">
+        </gf-form-switch>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Frames per second</label>
+            <input type="number" min="0.1" max="60" step="0.1" class="input-small gf-form-input width-10" ng-model="ctrl.panel.framesPerSecond" ng-change="ctrl.render()" placeholder="5" ng-model-onblur />
+        </div>
     </div>
 
     <div class="section gf-form-group" ng-show="ctrl.panel.renderType != 'polygon'">
@@ -108,6 +116,13 @@
         </div>
         <div class="gf-form" ng-show="ctrl.panel.colorRamp.codeTo == 'measurement'">
             <label class="gf-form-label width-20"><img ng-src="{{ctrl.getColorScaleImgUrl()}}" class="geoloop-img-fill" /></label>
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Opacity</label>
+            <input type="number" min="0" max="1" step="0.1" class="input-small gf-form-input width-10" ng-model="ctrl.panel.colorRamp.opacity" ng-change="ctrl.render()" placeholder="0.5" ng-model-onblur />
+        </div>
+        <div class="gf-form">
+            <gf-form-switch class="gf-form" label="Show Legend" label-class="width-10" checked="ctrl.panel.colorRamp.showLegend" on-change="ctrl.render()"></gf-form-switch>
         </div>
     </div>
 </div>

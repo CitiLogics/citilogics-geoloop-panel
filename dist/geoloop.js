@@ -40,6 +40,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
 
       GeoLoop = function () {
         function GeoLoop(ctrl, mapContainer) {
+          var _this = this;
+
           _classCallCheck(this, GeoLoop);
 
           this.ctrl = ctrl;
@@ -48,12 +50,46 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           this.frames = []; // list of timestamps
           this.currentFrameIndex = 0;
           this.animation = {};
+          this.pause = false;
+          // register overlay button click event
+          d3.select('#map_' + this.ctrl.panel.id + '_button_pause').on('click', function () {
+            // toggle pause
+            _this.pause = !_this.pause;
+            if (_this.pause) {
+              _this.stopAnimation();
+            } else {
+              _this.startAnimation();
+            }
+          });
+          d3.select('#map_' + this.ctrl.panel.id + '_button_backward').on('click', function () {
+            // go one frame backward
+            _this.pause = true;
+            _this.stopAnimation();
+            _this.stepFrame((_this.currentFrameIndex + _this.frames.length - 1) % _this.frames.length);
+          });
+          d3.select('#map_' + this.ctrl.panel.id + '_button_forward').on('click', function () {
+            // go one frame forward
+            _this.pause = true;
+            _this.stopAnimation();
+            _this.stepFrame((_this.currentFrameIndex + 1) % _this.frames.length);
+          });
+          // register overlay slider input event
+          d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', function () {
+            // pause
+            _this.pause = true;
+            _this.stopAnimation();
+            // set frame to selected date/time
+            var targetFrame = parseInt(d3.select('#map_' + _this.ctrl.panel.id + '_slider').property('value'), 10);
+            _this.stepFrame(targetFrame);
+          });
         }
 
         _createClass(GeoLoop, [{
           key: 'createMap',
           value: function createMap() {
-            console.log('rebuilding map');
+            var _this2 = this;
+
+            console.log('creating mapbox-map');
             var mapCenterLonLat = [parseFloat(this.ctrl.panel.mapCenterLongitude), parseFloat(this.ctrl.panel.mapCenterLatitude)];
             mapboxgl.accessToken = this.ctrl.panel.mbApiKey;
             this.map = new mapboxgl.Map({
@@ -62,6 +98,18 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               center: mapCenterLonLat,
               zoom: parseFloat(this.ctrl.panel.initialZoom),
               interactive: this.ctrl.panel.userInteractionEnabled
+            });
+            // load geo data if there already is some (created by ctrl.updateGeoDataFeatures)
+            this.map.on('load', function () {
+              if (_this2.ctrl.geoResult) {
+                console.log('loading cached geo data into mapbox-map');
+                try {
+                  _this2.map.addSource('geo', _this2.ctrl.geoResult);
+                } catch (e) {
+                  // don't panic on error, just print it
+                  console.log('add source error: ', e);
+                }
+              }
             });
           }
         }, {
@@ -78,6 +126,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'drawLayerFrames',
           value: function drawLayerFrames() {
+            console.log('drawing layer frames');
             var data = this.ctrl.data;
             if (this.needToRedrawFrames(data)) {
               this.stopAnimation();
@@ -89,41 +138,66 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'clearFrames',
           value: function clearFrames() {
-            var _this = this;
+            var _this3 = this;
 
+            var errors = 0;
             this.frames.forEach(function (item) {
-              _this.map.removeLayer('f-' + item);
+              try {
+                _this3.map.removeLayer('f-' + item);
+              } catch (e) {
+                // don't stop on error
+                errors += 1;
+              }
             });
+            if (errors) {
+              console.error('failed to remove' + errors + 'layers from mapbox-map');
+            }
             this.frames = [];
           }
         }, {
           key: 'createFrames',
           value: function createFrames() {
-            var _this2 = this;
+            var _this4 = this;
 
             if (!this.ctrl.dataCharacteristics.timeValues) {
-              console.log('no series to display');
+              console.log('no series to display (while trying to create frames)');
               return;
             }
 
             if (!this.ctrl.geo) {
-              console.log('no geo data');
+              console.log('no geo data (while trying to create frames)');
+              return;
+            }
+
+            if (!this.map) {
+              console.log('no map found (while trying to create frames)');
               return;
             }
 
             if (this.map.isSourceLoaded('geo')) {
+              console.log('geo source found on first try. Starting to build frames.');
               this.createFramesSafely();
             } else {
               // console.log('no geo source in map. maybe not loaded?');
-              // this is stupid to use setTimeout.
+              // this is stupid to use setInterval.
               // but mapbox doesn't seem to have a on-source-loaded event that reliably works
               // for this purpose.
-              setTimeout(function () {
-                // console.log('waited for layer to load.');
-                if (_this2.map.isSourceLoaded('geo')) {
-                  _this2.createFramesSafely();
+              var attemptsLeft = 15; // slow connections might need a lot of time
+              var interval = setInterval(function () {
+                if (!_this4.map) {
+                  console.log('map was unloaded while waiting for geo source');
+                  clearInterval(interval);
+                } else if (_this4.map.isSourceLoaded('geo')) {
+                  console.log('geo source found. Starting to build frames');
+                  clearInterval(interval);
+                  _this4.createFramesSafely();
                 } else {
-                  console.log('still no geo source. try refresh manually?');
+                  console.log('no geo source found. Trying again...');
+                  attemptsLeft -= 1;
+                  if (attemptsLeft <= 0) {
+                    clearInterval(interval);
+                    console.error('Failed to load geo source. Try to refresh manually?');
+                  }
                 }
               }, 1000);
             }
@@ -131,7 +205,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'createFramesSafely',
           value: function createFramesSafely() {
-            var _this3 = this;
+            var _this5 = this;
 
             var sizeIsDynamic = this.ctrl.panel.sizeRamp.codeTo === 'measurement';
             var colorIsDynamic = this.ctrl.panel.colorRamp.codeTo === 'measurement';
@@ -191,12 +265,12 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                   property: frameName,
                   type: 'exponential',
                   stops: sizeStops
-                } : parseFloat(_this3.ctrl.panel.sizeRamp.fixedValue);
+                } : parseFloat(_this5.ctrl.panel.sizeRamp.fixedValue);
                 pp['line-color'] = colorIsDynamic ? {
                   property: frameName,
                   type: 'exponential',
                   stops: colorStops
-                } : parseFloat(_this3.ctrl.panel.colorRamp.fixedValue);
+                } : parseFloat(_this5.ctrl.panel.colorRamp.fixedValue);
               } else if (featureType === 'point') {
                 geoFilter = ['==', '$type', 'Point'];
                 pp['circle-opacity'] = 0;
@@ -205,12 +279,12 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                   property: frameName,
                   type: 'exponential',
                   stops: sizeStops
-                } : parseFloat(_this3.ctrl.panel.sizeRamp.fixedValue);
+                } : parseFloat(_this5.ctrl.panel.sizeRamp.fixedValue);
                 pp['circle-color'] = colorIsDynamic ? {
                   property: frameName,
                   type: 'exponential',
                   stops: colorStops
-                } : _this3.ctrl.panel.colorRamp.fixedValue;
+                } : _this5.ctrl.panel.colorRamp.fixedValue;
               } else if (featureType === 'polygon') {
                 geoFilter = ['==', '$type', 'Polygon'];
                 pp['fill-opacity'] = 0;
@@ -219,10 +293,10 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                   property: frameName,
                   type: 'exponential',
                   stops: colorStops
-                } : _this3.ctrl.panel.colorRamp.fixedValue;
+                } : _this5.ctrl.panel.colorRamp.fixedValue;
               }
 
-              _this3.map.addLayer({
+              _this5.map.addLayer({
                 id: 'f-' + time,
                 type: layerType,
                 source: 'geo',
@@ -230,24 +304,28 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
                 filter: geoFilter
               });
 
-              _this3.frames.push(time);
+              _this5.frames.push(time);
             });
 
             // get slider component, set min/max/value
-            var slider = d3.select('#map_' + this.ctrl.panel.id + '_slider').attr('min', 0).attr('max', this.frames.length);
+            d3.select('#map_' + this.ctrl.panel.id + '_slider').attr('min', 0).attr('max', this.frames.length);
+            // update colorbar legend and text
+            d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.legend_text').html(this.ctrl.inputRange.map(Math.round).join(' - '));
+            d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').style('background', 'linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
           }
         }, {
           key: 'startAnimation',
           value: function startAnimation() {
-            var _this4 = this;
+            var _this6 = this;
 
             if (this.animation) {
               this.stopAnimation();
             }
 
+            // start the animation with the specified fps
             this.animation = setInterval(function () {
-              _this4.stepFrame();
-            }, 200);
+              _this6.stepFrame();
+            }, 1000 / this.ctrl.panel.framesPerSecond);
           }
         }, {
           key: 'stopAnimation',
@@ -258,6 +336,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'stepFrame',
           value: function stepFrame() {
+            var targetFrame = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : -1;
+
             if (!this.map) {
               return;
             }
@@ -266,10 +346,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
               return;
             }
             var oldFrame = 'f-' + this.frames[this.currentFrameIndex];
-            this.currentFrameIndex += 1;
-            if (this.currentFrameIndex >= this.frames.length) {
-              this.currentFrameIndex = 0;
-            }
+            this.currentFrameIndex = targetFrame >= 0 ? targetFrame : this.currentFrameIndex + 1;
+            this.currentFrameIndex %= this.frames.length;
             var newFrame = 'f-' + this.frames[this.currentFrameIndex];
 
             var opacitySelectors = {
@@ -282,8 +360,7 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
             this.map.setPaintProperty(newFrame, selector, 1);
             this.map.setPaintProperty(oldFrame, selector, 0);
             var tstamp = this.frames[this.currentFrameIndex] / 1e3;
-            var timeStr = moment.unix(tstamp).format('YYYY-MM-DD HH:mm:ss');
-            // console.log('time is ', timeStr);
+            var timeStr = moment.unix(tstamp).format(this.ctrl.panel.hideTime ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss');
 
             // set time string in legend
             d3.select('#map_' + this.ctrl.panel.id + '_date').text(timeStr);
@@ -309,6 +386,8 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
         }, {
           key: 'remove',
           value: function remove() {
+            this.stopAnimation();
+            this.clearFrames();
             if (this.map) {
               this.map.remove();
             }

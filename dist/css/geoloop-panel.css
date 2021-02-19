@@ -11,18 +11,6 @@
   color: #777;
 }
 
-.legend {
-  line-height: 18px;
-  color: #555;
-}
-.legend i {
-  width: 18px;
-  height: 18px;
-  float: left;
-  margin-right: 8px;
-  opacity: 0.7;
-}
-
 .geoloop-img-fill {
   width:100%;
   height:20px;
@@ -30,7 +18,6 @@
 
 .map-overlay {
   font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  color: #333333;
   position: absolute;
   width: 25%;
   top: 0;
@@ -39,11 +26,11 @@
 }
 
 .map-overlay .map-overlay-inner {
-  background-color: #fff;
-  box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+  background-color: #8888;
   border-radius: 3px;
   padding: 10px;
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .map-overlay h2 {
@@ -55,7 +42,7 @@
 .map-overlay .legend .bar {
   height: 10px;
   width: 100%;
-  background: linear-gradient(to right, #FCA107, #7F3121);
+  background: linear-gradient(to right, #000, #fff);
 }
 
 .map-overlay input {
@@ -65,4 +52,15 @@
   position: relative;
   margin: 0;
   cursor: ew-resize;
+}
+
+.map-overlay button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.map-overlay button img {
+  width: 2em;
+  padding: 0.2em;
 }

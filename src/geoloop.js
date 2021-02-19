@@ -12,10 +12,42 @@ export default class GeoLoop {
     this.frames = []; // list of timestamps
     this.currentFrameIndex = 0;
     this.animation = {};
+    this.pause = false;
+    // register overlay button click event
+    d3.select('#map_' + this.ctrl.panel.id + '_button_pause').on('click', () => {
+      // toggle pause
+      this.pause = !this.pause;
+      if (this.pause) {
+        this.stopAnimation();
+      } else {
+        this.startAnimation();
+      }
+    });
+    d3.select('#map_' + this.ctrl.panel.id + '_button_backward').on('click', () => {
+      // go one frame backward
+      this.pause = true;
+      this.stopAnimation();
+      this.stepFrame(((this.currentFrameIndex + this.frames.length) - 1) % this.frames.length);
+    });
+    d3.select('#map_' + this.ctrl.panel.id + '_button_forward').on('click', () => {
+      // go one frame forward
+      this.pause = true;
+      this.stopAnimation();
+      this.stepFrame((this.currentFrameIndex + 1) % this.frames.length);
+    });
+    // register overlay slider input event
+    d3.select('#map_' + this.ctrl.panel.id + '_slider').on('input', () => {
+      // pause
+      this.pause = true;
+      this.stopAnimation();
+      // set frame to selected date/time
+      const targetFrame = parseInt(d3.select('#map_' + this.ctrl.panel.id + '_slider').property('value'), 10);
+      this.stepFrame(targetFrame);
+    });
   }
 
   createMap() {
-    console.log('rebuilding map');
+    console.log('creating mapbox-map');
     const mapCenterLonLat = [parseFloat(this.ctrl.panel.mapCenterLongitude), parseFloat(this.ctrl.panel.mapCenterLatitude)];
     mapboxgl.accessToken = this.ctrl.panel.mbApiKey;
     this.map = new mapboxgl.Map({
@@ -24,6 +56,18 @@ export default class GeoLoop {
       center: mapCenterLonLat,
       zoom: parseFloat(this.ctrl.panel.initialZoom),
       interactive: this.ctrl.panel.userInteractionEnabled
+    });
+    // load geo data if there already is some (created by ctrl.updateGeoDataFeatures)
+    this.map.on('load', () => {
+      if (this.ctrl.geoResult) {
+        console.log('loading cached geo data into mapbox-map');
+        try {
+          this.map.addSource('geo', this.ctrl.geoResult);
+        } catch (e) {
+          // don't panic on error, just print it
+          console.log('add source error: ', e);
+        }
+      }
     });
   }
 
@@ -37,6 +81,7 @@ export default class GeoLoop {
   }
 
   drawLayerFrames() {
+    console.log('drawing layer frames');
     const data = this.ctrl.data;
     if (this.needToRedrawFrames(data)) {
       this.stopAnimation();
@@ -47,40 +92,60 @@ export default class GeoLoop {
   }
 
   clearFrames() {
+    let errors = 0;
     this.frames.forEach((item) => {
-      this.map.removeLayer('f-' + item);
+      try {
+        this.map.removeLayer('f-' + item);
+      } catch (e) {
+        // don't stop on error
+        errors += 1;
+      }
     });
+    if (errors) {
+      console.error('failed to remove' + errors + 'layers from mapbox-map');
+    }
     this.frames = [];
   }
 
   createFrames() {
     if (!this.ctrl.dataCharacteristics.timeValues) {
-      console.log('no series to display');
+      console.log('no series to display (while trying to create frames)');
       return;
     }
 
     if (!this.ctrl.geo) {
-      console.log('no geo data');
+      console.log('no geo data (while trying to create frames)');
+      return;
+    }
+
+    if (!this.map) {
+      console.log('no map found (while trying to create frames)');
       return;
     }
 
     if (this.map.isSourceLoaded('geo')) {
+      console.log('geo source found on first try. Starting to build frames.');
       this.createFramesSafely();
     } else {
       // console.log('no geo source in map. maybe not loaded?');
       // this is stupid to use setInterval.
       // but mapbox doesn't seem to have a on-source-loaded event that reliably works
       // for this purpose.
-      let attemptsLeft = 10;
+      let attemptsLeft = 15;  // slow connections might need a lot of time
       const interval = setInterval(() => {
-        // console.log('waited for layer to load.');
-        if (this.map.isSourceLoaded('geo')) {
-          this.createFramesSafely();
+        if (!this.map) {
+          console.log('map was unloaded while waiting for geo source');
           clearInterval(interval);
+        } else if (this.map.isSourceLoaded('geo')) {
+          console.log('geo source found. Starting to build frames');
+          clearInterval(interval);
+          this.createFramesSafely();
         } else {
-          console.log('still no geo source. try refresh manually?');
-          if (--attemptsLeft <= 0) {
+          console.log('no geo source found. Trying again...');
+          attemptsLeft -= 1;
+          if (attemptsLeft <= 0) {
             clearInterval(interval);
+            console.error('Failed to load geo source. Try to refresh manually?');
           }
         }
       }, 1000);
@@ -189,9 +254,12 @@ export default class GeoLoop {
     });
 
     // get slider component, set min/max/value
-    const slider = d3.select('#map_' + this.ctrl.panel.id + '_slider')
+    d3.select('#map_' + this.ctrl.panel.id + '_slider')
       .attr('min', 0)
       .attr('max', this.frames.length);
+    // update colorbar legend and text
+    d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.legend_text').html(this.ctrl.inputRange.map(Math.round).join(' - '));
+    d3.select('#map_' + this.ctrl.panel.id + '_legend').selectAll('.bar').style('background', 'linear-gradient(to right, ' + [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(this.ctrl.theRamp).join(', ') + ')');
   }
 
 
@@ -200,9 +268,10 @@ export default class GeoLoop {
       this.stopAnimation();
     }
 
+    // start the animation with the specified fps
     this.animation = setInterval(() => {
       this.stepFrame();
-    }, 200);
+    }, 1000 / this.ctrl.panel.framesPerSecond);
   }
 
   stopAnimation() {
@@ -210,7 +279,7 @@ export default class GeoLoop {
     this.animation = null;
   }
 
-  stepFrame() {
+  stepFrame(targetFrame = -1) {
     if (!this.map) {
       return;
     }
@@ -219,10 +288,8 @@ export default class GeoLoop {
       return;
     }
     const oldFrame = 'f-' + this.frames[this.currentFrameIndex];
-    this.currentFrameIndex += 1;
-    if (this.currentFrameIndex >= this.frames.length) {
-      this.currentFrameIndex = 0;
-    }
+    this.currentFrameIndex = targetFrame >= 0 ? targetFrame : this.currentFrameIndex + 1;
+    this.currentFrameIndex %= this.frames.length;
     const newFrame = 'f-' + this.frames[this.currentFrameIndex];
 
     const opacitySelectors = {
@@ -235,8 +302,7 @@ export default class GeoLoop {
     this.map.setPaintProperty(newFrame, selector, 1);
     this.map.setPaintProperty(oldFrame, selector, 0);
     const tstamp = this.frames[this.currentFrameIndex] / 1e3;
-    const timeStr = moment.unix(tstamp).format('YYYY-MM-DD HH:mm:ss');
-    // console.log('time is ', timeStr);
+    const timeStr = moment.unix(tstamp).format(this.ctrl.panel.hideTime ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss');
 
     // set time string in legend
     d3.select('#map_' + this.ctrl.panel.id + '_date').text(timeStr);
@@ -258,6 +324,8 @@ export default class GeoLoop {
   }
 
   remove() {
+    this.stopAnimation();
+    this.clearFrames();
     if (this.map) {
       this.map.remove();
     }

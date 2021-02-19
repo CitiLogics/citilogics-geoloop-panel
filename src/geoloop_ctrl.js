@@ -21,6 +21,8 @@ const panelDefaults = {
   animationSpeed: 1, // # of seconds animation time per day of data
   animationPause: 500, // millisecond pause at end of animation loop
   hideFeaturesWithNoData: true,
+  hideTime: false,  // hide the time in the overlay and only display the date
+  framesPerSecond: 5,
   geoIdTag: 'geo_id',
   geoIdPath: 'id',
   geo: {
@@ -129,7 +131,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     _.defaults(this.panel, panelDefaults.colorRamp);
     _.defaults(this.panel, panelDefaults.sizeRamp);
     _.defaults(this.panel, panelDefaults.geo);
-
     this.setMapProviderOpts();
 
     this.dataFormatter = new DataFormatter(this, kbn);
@@ -139,7 +140,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
     this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
 
-    console.log('control constructor loading geo:');
     this.loadGeo(true);
     this.lonLatStr = this.panel.mapCenterLongitude + ',' + this.panel.mapCenterLatitude;
 
@@ -204,11 +204,13 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   loadGeo(reload) {
-    if (this.map && !reload) {
+    if (this.geo && !reload) {
+      // already loaded
       return;
     }
 
     if (this.panel.snapshotLocationData) {
+      console.log('Found snapshop location data. Loading geo data from there...');
       this.geo = this.panel.snapshotLocationData;
       return;
     }
@@ -217,6 +219,7 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       if (!this.panel.geo.contents) {
         return;
       }
+      console.log('Trying to load geo data from url: ', this.panel.geo.contents);
       window.$.ajax({
         type: 'GET',
         url: this.panel.geo.contents + '?callback=?',
@@ -249,10 +252,11 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   onDataReceived(dataList) {
-    // console.log('ctrl recieved data: ', dataList);
+    console.log('ctrl recieved data: ', dataList);
     if (!dataList) return;
 
     if (this.dashboard.snapshot && this.geo) {
+      console.log('Saving geo data to snapshot...');
       this.panel.snapshotLocationData = this.geo;
     }
 
@@ -287,19 +291,16 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   }
 
   updateGeoDataFeatures() {
-    console.log('updating geo features');
+    console.log('updating geo data features...');
     if (!this.geo || !this.geo.features) {
       console.log('no geo or no features');
       return;
     }
     if (this.map && this.map.map.getSource('geo')) {
-      // console.log('geojson source found. removing...');
+      console.log('geojson source found. removing...');
       this.map.map.removeSource('geo');
     }
-    if (!this.dataCharacteristics || !this.dataCharacteristics.timeValues) {
-      console.log('no data yet...');
-      return;
-    }
+
     // clear timeseries data from geojson data
     this.dataCharacteristics.timeValues.forEach((tv) => {
       this.geo.features.forEach((feature) => {
@@ -348,7 +349,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       }
     });
 
-
     let result = this.geo;
     if (this.panel.hideFeaturesWithNoData) {
       // Create array of features only containing features with data.
@@ -360,16 +360,27 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
       // Create copy of geo object but with the filtered subset of features.
       result = Object.assign({}, this.geo);
       result.features = filteredFeatures;
+      console.log('Filtered empty features: ' + result.features.length + '/' + this.geo.features.length + ' remain');
     }
 
-    if (result && this.map) {
-      console.log('adding geojson source...');
-      this.map.map.addSource('geo', {
-        type: 'geojson',
-        data: result
-      });
+    if (result) {
+      if (this.map) {
+        // load results into map
+        console.log('adding geojson source...');
+        this.map.map.addSource('geo', {
+          type: 'geojson',
+          data: result
+        });
+      } else {
+        // save results for when the map loads
+        console.log('caching geojson source, because map is not loaded yet');
+        this.geoResult = {
+          type: 'geojson',
+          data: result
+        };
+      }
     } else {
-      console.log('not adding source because no map');
+      console.log('not adding source because no result/geo');
     }
   }
 
@@ -380,17 +391,17 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
     if (this.panel.colorRamp.codeTo === 'fixed') {
       colorInterpolator = () => this.panel.colorRamp.fixedValue;
     } else {
-      const inputRange = this.panel.colorRamp.auto ? [dc.min, dc.max] : [this.panel.colorRamp.minValue, this.panel.colorRamp.maxValue];
-      const theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
+      this.inputRange = this.panel.colorRamp.auto ? [dc.min, dc.max] : [this.panel.colorRamp.minValue, this.panel.colorRamp.maxValue];
+      this.theRamp = this.opts.colorRamps[this.panel.colorRamp.scaleName];
       // console.log('color ramp name: ', this.panel.colorRamp.scaleName);
       // console.log('color ramp: ', theRamp);
-      colorInterpolator = d3.scaleSequential().domain(inputRange).interpolator(theRamp);
+      colorInterpolator = d3.scaleSequential().domain(this.inputRange).interpolator(this.theRamp);
     }
 
     this.panel.colorInterpolator = (value) => {
       const scaleColor = colorInterpolator(value);
       const color = csscolorparser.parseCSSColor(scaleColor);
-      const opacity = _.clamp(_.defaultTo(this.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
+      const opacity = _.clamp(_.defaultTo(this.panel.colorRamp.opacity, 0.5), 0.0, 1.0);
       return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + opacity + ')';
     };
 
@@ -408,7 +419,6 @@ export default class GeoLoopCtrl extends MetricsPanelCtrl {
   link(scope, elem, attrs, ctrl) {
     mapRenderer(scope, elem, attrs, ctrl);
   }
-
 }
 
 GeoLoopCtrl.templateUrl = 'module.html';
