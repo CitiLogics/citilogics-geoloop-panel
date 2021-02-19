@@ -26,11 +26,13 @@ export default class GeoLoop {
     d3.select('#map_' + this.ctrl.panel.id + '_button_backward').on('click', () => {
       // go one frame backward
       this.pause = true;
+      this.stopAnimation();
       this.stepFrame(((this.currentFrameIndex + this.frames.length) - 1) % this.frames.length);
     });
     d3.select('#map_' + this.ctrl.panel.id + '_button_forward').on('click', () => {
       // go one frame forward
       this.pause = true;
+      this.stopAnimation();
       this.stepFrame((this.currentFrameIndex + 1) % this.frames.length);
     });
     // register overlay slider input event

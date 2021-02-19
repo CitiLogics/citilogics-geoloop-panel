@@ -64,11 +64,13 @@ System.register(['moment', './libs/mapbox-gl', './libs/d3'], function (_export, 
           d3.select('#map_' + this.ctrl.panel.id + '_button_backward').on('click', function () {
             // go one frame backward
             _this.pause = true;
+            _this.stopAnimation();
             _this.stepFrame((_this.currentFrameIndex + _this.frames.length - 1) % _this.frames.length);
           });
           d3.select('#map_' + this.ctrl.panel.id + '_button_forward').on('click', function () {
             // go one frame forward
             _this.pause = true;
+            _this.stopAnimation();
             _this.stepFrame((_this.currentFrameIndex + 1) % _this.frames.length);
           });
           // register overlay slider input event
