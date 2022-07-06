@@ -53,6 +53,6 @@
     "es6-module-loader": "^0.17.11",
     "grafana-sdk-test": "^1.0.0",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1"
+    "moment": "^2.29.4"
   }
 }
